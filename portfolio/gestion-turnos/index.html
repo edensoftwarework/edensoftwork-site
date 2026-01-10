@@ -32,6 +32,13 @@
       gap: 15px;
       margin-bottom: 30px;
     }
+    .time-inputs {
+      display: flex;
+      gap: 10px;
+    }
+    .time-inputs input {
+      flex: 1;
+    }
     input, button {
       padding: 12px;
       border: 1px solid #ddd;
@@ -145,12 +152,120 @@
       background-color: rgba(0,0,0,0.4);
     }
     .modal-content {
+      position: fixed;
+      top: 10%;
+      left: 10%;
+      right: 5%;
+      bottom: 10%;
       background-color: #fefefe;
-      margin: 15% auto;
       padding: 20px;
       border: 1px solid #888;
-      width: 80%;
-      max-width: 500px;
+      overflow-y: auto;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #aaa;
+    }
+    #modal-date {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .time-slot {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      min-height: 50px;
+    }
+    .time-label {
+      width: 60px;
+      font-weight: bold;
+    }
+    .slot-free {
+      color: #999;
+      flex: 1;
+    }
+    .occupied {
+      background: #e3f2fd;
+    }
+    .slot-appointments {
+      flex: 1;
+    }
+    .appointment-item {
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .timeline {
+      position: relative;
+      height: 560px;
+      padding-left: 70px;
+      border-left: 1px solid #ddd;
+    }
+    .timeline-hour {
+      position: relative;
+      height: 40px;
+      border-bottom: 1px solid #eee;
+    }
+    .hour-label {
+      position: absolute;
+      left: -60px;
+      top: -10px;
+      width: 50px;
+      text-align: right;
+      font-size: 12px;
+      color: #666;
+    }
+    .hour-line {
+      height: 1px;
+      background: #ddd;
+      margin-left: 10px;
+    }
+    .timeline-appointment {
+      position: absolute;
+      left: 80px;
+      right: 10px;
+      background: #667eea;
+      color: white;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .appt-content {
+      font-weight: bold;
+    }
+    .action-menu {
+      position: fixed;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: none;
+    }
+    .action-menu button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border: none;
+      background: #667eea;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .action-menu button:hover {
+      background: #5a67d8;
     }
     .close {
       color: #aaa;
@@ -181,7 +296,10 @@
     <form id="appointment-form">
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
       <input type="date" id="date" required>
-      <input type="time" id="time" required>
+      <div class="time-inputs">
+        <input type="time" id="start-time" placeholder="Inicio Turno" required>
+        <input type="time" id="end-time" placeholder="Fin Turno" required>
+      </div>
       <button type="submit" id="submit-btn">Agregar Turno</button>
     </form>
     <div class="stats">
@@ -211,7 +329,7 @@
       <div class="modal-content">
         <span class="close">&times;</span>
         <h3 id="modal-date"></h3>
-        <ul id="modal-appointments"></ul>
+        <div id="time-slots"></div>
       </div>
     </div>
 
@@ -231,14 +349,25 @@
     const calendar = document.getElementById('calendar');
     const modal = document.getElementById('day-modal');
     const modalDate = document.getElementById('modal-date');
-    const modalAppointments = document.getElementById('modal-appointments');
+    const modalAppointments = document.getElementById('time-slots');
     const closeModal = document.querySelector('.close');
+    const startTimeInput = document.getElementById('start-time');
+    const endTimeInput = document.getElementById('end-time');
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
     let filteredAppointments = [...appointments];
     let editingIndex = null;
     let isFiltered = false;
+
+    startTimeInput.addEventListener('change', () => {
+      if (startTimeInput.value) {
+        const [hours, minutes] = startTimeInput.value.split(':').map(Number);
+        const endDate = new Date();
+        endDate.setHours(hours, minutes + 30);
+        endTimeInput.value = endDate.toTimeString().slice(0, 5);
+      }
+    });
 
     function renderAppointments(list = filteredAppointments) {
       if (!isFiltered) {
@@ -256,7 +385,7 @@
         const li = document.createElement('li');
         li.className = 'appointment';
         li.innerHTML = `
-          <span>${appt.client} - ${appt.date} ${appt.time}</span>
+          <span>${appt.client} - ${appt.date} ${appt.startTime} - ${appt.endTime}</span>
           <button class="edit-btn" onclick="editAppointment(${appointments.indexOf(appt)})">Editar</button>
           <button class="delete-btn" onclick="deleteAppointment(${appointments.indexOf(appt)})">Eliminar</button>
         `;
@@ -356,28 +485,89 @@
     }
 
     function showDayAppointments(dateStr) {
-      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
-      modalDate.textContent = `Turnos para ${new Date(dateStr).toLocaleDateString('es')}`;
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.startTime.localeCompare(b.startTime));
+      const date = new Date(dateStr + 'T00:00:00');
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      modalDate.textContent = `Turnos para ${day}/${month}/${year}`;
       modalAppointments.innerHTML = '';
-      if (dayAppointments.length === 0) {
-        modalAppointments.innerHTML = '<li>No hay turnos este día.</li>';
-      } else {
-        dayAppointments.forEach((appt, index) => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <span>${appt.time} - ${appt.client}</span>
-            <button class="edit-btn" onclick="editAppointmentFromModal('${dateStr}', ${index})">Editar</button>
-            <button class="delete-btn" onclick="deleteAppointmentFromModal('${dateStr}', ${index})">Eliminar</button>
-          `;
-          modalAppointments.appendChild(li);
-        });
+      const timelineDiv = document.createElement('div');
+      timelineDiv.className = 'timeline';
+      // Horas
+      for (let hour = 8; hour <= 22; hour++) {
+        const hourDiv = document.createElement('div');
+        hourDiv.className = 'timeline-hour';
+        hourDiv.innerHTML = `<div class="hour-label">${String(hour).padStart(2, '0')}:00</div><div class="hour-line"></div>`;
+        timelineDiv.appendChild(hourDiv);
       }
+      // Turnos
+      dayAppointments.forEach(appt => {
+        const [startH, startM] = appt.startTime.split(':').map(Number);
+        const [endH, endM] = appt.endTime.split(':').map(Number);
+        const startMinutes = (startH - 8) * 60 + startM;
+        const endMinutes = (endH - 8) * 60 + endM;
+        const top = (startMinutes / 60) * 40;
+        const height = ((endMinutes - startMinutes) / 60) * 40;
+        const apptDiv = document.createElement('div');
+        apptDiv.className = 'timeline-appointment';
+        apptDiv.style.top = `${top}px`;
+        apptDiv.style.height = `${height}px`;
+        apptDiv.innerHTML = `
+          <div class="appt-content">${appt.startTime} - ${appt.endTime} ${appt.client}</div>
+        `;
+        apptDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Ocultar menú anterior si existe
+          const existingMenu = document.querySelector('.action-menu');
+          if (existingMenu) existingMenu.remove();
+          // Crear menú
+          const menu = document.createElement('div');
+          menu.className = 'action-menu';
+          menu.style.left = e.clientX + 'px';
+          menu.style.top = e.clientY + 'px';
+          menu.innerHTML = `
+            <button id="edit-btn">Editar</button>
+            <button id="delete-btn">Eliminar</button>
+          `;
+          document.body.appendChild(menu);
+          menu.style.display = 'block';
+          // Event listeners
+          menu.querySelector('#edit-btn').addEventListener('click', () => {
+            editAppointment(appointments.indexOf(appt));
+            modal.style.display = 'none';
+            menu.remove();
+          });
+          menu.querySelector('#delete-btn').addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que quieres eliminar este turno?')) {
+              deleteAppointment(appointments.indexOf(appt));
+              modal.style.display = 'none';
+            }
+            menu.remove();
+          });
+          // Cerrar al hacer clic fuera
+          const closeMenu = (event) => {
+            if (!menu.contains(event.target)) {
+              menu.remove();
+              document.removeEventListener('click', closeMenu);
+            }
+          };
+          setTimeout(() => document.addEventListener('click', closeMenu), 0);
+        });
+        timelineDiv.appendChild(apptDiv);
+      });
+      modalAppointments.appendChild(timelineDiv);
       modal.style.display = 'block';
     }
 
     closeModal.addEventListener('click', () => modal.style.display = 'none');
     window.addEventListener('click', (e) => {
       if (e.target === modal) modal.style.display = 'none';
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.style.display === 'block') {
+        modal.style.display = 'none';
+      }
     });
 
     prevMonth.addEventListener('click', () => {
@@ -402,19 +592,21 @@
       e.preventDefault();
       const client = document.getElementById('client').value;
       const date = document.getElementById('date').value;
-      const time = document.getElementById('time').value;
+      const startTime = document.getElementById('start-time').value;
+      const endTime = document.getElementById('end-time').value;
       const now = new Date();
-      const selectedDateTime = new Date(`${date}T${time}`);
-      if (selectedDateTime <= now) {
-        alert('No puedes agendar turnos en fechas u horas pasadas.');
+      const selectedStart = new Date(`${date}T${startTime}`);
+      const selectedEnd = new Date(`${date}T${endTime}`);
+      if (selectedStart <= now || selectedEnd <= selectedStart) {
+        alert('La hora de fin debe ser posterior a la de inicio y no en el pasado.');
         return;
       }
       if (editingIndex !== null) {
-        appointments[editingIndex] = { client, date, time };
+        appointments[editingIndex] = { client, date, startTime, endTime };
         editingIndex = null;
         document.getElementById('submit-btn').textContent = 'Agregar Turno';
       } else {
-        appointments.push({ client, date, time });
+        appointments.push({ client, date, startTime, endTime });
       }
       localStorage.setItem('appointments', JSON.stringify(appointments));
       form.reset();
@@ -436,8 +628,18 @@
       renderCalendar();
     }
 
+    function editAppointment(index) {
+      const appt = appointments[index];
+      document.getElementById('client').value = appt.client;
+      document.getElementById('date').value = appt.date;
+      document.getElementById('start-time').value = appt.startTime;
+      document.getElementById('end-time').value = appt.endTime;
+      editingIndex = index;
+      document.getElementById('submit-btn').textContent = 'Actualizar Turno';
+    }
+
     function editAppointmentFromModal(dateStr, index) {
-      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.startTime.localeCompare(b.startTime));
       const appt = dayAppointments[index];
       const globalIndex = appointments.indexOf(appt);
       editAppointment(globalIndex);
@@ -445,7 +647,7 @@
     }
 
     function deleteAppointmentFromModal(dateStr, index) {
-      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.startTime.localeCompare(b.startTime));
       const appt = dayAppointments[index];
       const globalIndex = appointments.indexOf(appt);
       deleteAppointment(globalIndex);
