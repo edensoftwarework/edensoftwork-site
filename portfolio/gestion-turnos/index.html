@@ -71,6 +71,18 @@
     .delete-btn:hover {
       background: #c53030;
     }
+    .edit-btn {
+      background: #ffa500;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .edit-btn:hover {
+      background: #e69500;
+    }
     .filters {
       margin: 20px 0;
       display: flex;
@@ -105,6 +117,51 @@
     .calendar-day.has-appointments {
       background: #e3f2fd;
     }
+    .calendar-day.past {
+      background: #f5f5f5;
+      color: #999;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .calendar-header button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: black;
+    }
     .back-link {
       display: block;
       text-align: center;
@@ -125,27 +182,38 @@
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
       <input type="date" id="date" required>
       <input type="time" id="time" required>
-      <button type="submit">Agregar Turno</button>
-    </form>    <div class="filters">
-      <input type="text" id="search" placeholder="Buscar por cliente">
-      <button id="filter-today">Hoy</button>
-      <button id="filter-week">Esta Semana</button>
-      <button id="filter-all">Todos</button>
-    </div>
+      <button type="submit" id="submit-btn">Agregar Turno</button>
+    </form>
     <div class="stats">
       <p id="stats-total">Total de turnos: 0</p>
       <p id="stats-today">Turnos hoy: 0</p>
       <p id="stats-week">Turnos esta semana: 0</p>
     </div>
     <div class="calendar">
-      <h2>Calendario de Turnos</h2>
+      <div class="calendar-header">
+        <button id="prev-month">&lt;</button>
+        <h2 id="calendar-title">Calendario de Turnos</h2>
+        <button id="next-month">&gt;</button>
+      </div>
       <div id="calendar"></div>
-    </div>    <div class="appointments" id="appointments-list">
+    </div>
+    <div class="filters">
+      <input type="text" id="search" placeholder="Buscar por cliente">
+      <button id="filter-today">Hoy</button>
+      <button id="filter-week">Esta Semana</button>
+      <button id="filter-all">Todos</button>
+    </div>
+    <div class="appointments" id="appointments-list">
       <h2>Turnos Agendados</h2>
       <!-- Citas se agregarán aquí -->
     </div>
-    <a href="../../index.html" class="back-link">Volver al Inicio</a>
-  </div>
+    <div id="day-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="modal-date"></h3>
+        <ul id="modal-appointments"></ul>
+      </div>
+    </div>
 
   <script>
     const form = document.getElementById('appointment-form');
@@ -157,15 +225,31 @@
     const statsTotal = document.getElementById('stats-total');
     const statsToday = document.getElementById('stats-today');
     const statsWeek = document.getElementById('stats-week');
+    const calendarTitle = document.getElementById('calendar-title');
+    const prevMonth = document.getElementById('prev-month');
+    const nextMonth = document.getElementById('next-month');
     const calendar = document.getElementById('calendar');
+    const modal = document.getElementById('day-modal');
+    const modalDate = document.getElementById('modal-date');
+    const modalAppointments = document.getElementById('modal-appointments');
+    const closeModal = document.querySelector('.close');
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
     let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
     let filteredAppointments = [...appointments];
+    let editingIndex = null;
+    let isFiltered = false;
 
     function renderAppointments(list = filteredAppointments) {
+      if (!isFiltered) {
+        appointmentsList.style.display = 'none';
+        return;
+      }
+      appointmentsList.style.display = 'block';
       const ul = appointmentsList.querySelector('ul') || document.createElement('ul');
       ul.innerHTML = '';
       if (list.length === 0) {
-        appointmentsList.innerHTML = '<h2>Turnos Agendados</h2><p>No hay turnos agendados.</p>';
+        appointmentsList.innerHTML = '<h2>Turnos Agendados</h2><p>No hay turnos que coincidan con la búsqueda.</p>';
         return;
       }
       list.forEach((appt, index) => {
@@ -173,6 +257,7 @@
         li.className = 'appointment';
         li.innerHTML = `
           <span>${appt.client} - ${appt.date} ${appt.time}</span>
+          <button class="edit-btn" onclick="editAppointment(${appointments.indexOf(appt)})">Editar</button>
           <button class="delete-btn" onclick="deleteAppointment(${appointments.indexOf(appt)})">Eliminar</button>
         `;
         ul.appendChild(li);
@@ -201,10 +286,11 @@
     function renderCalendar() {
       calendar.innerHTML = '';
       const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
+      const year = currentYear;
+      const month = currentMonth;
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
+      calendarTitle.textContent = `${new Date(year, month).toLocaleString('es', { month: 'long', year: 'numeric' })}`;
 
       // Días de la semana
       const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -228,9 +314,15 @@
         dayDiv.className = 'calendar-day';
         dayDiv.textContent = day;
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        if (appointments.some(appt => appt.date === dateStr)) {
+        const hasAppointments = appointments.some(appt => appt.date === dateStr);
+        const isPast = new Date(dateStr) < new Date(now.toDateString());
+        if (hasAppointments) {
           dayDiv.classList.add('has-appointments');
         }
+        if (isPast && hasAppointments) {
+          dayDiv.classList.add('past');
+        }
+        dayDiv.addEventListener('click', () => showDayAppointments(dateStr));
         calendar.appendChild(dayDiv);
       }
     }
@@ -240,6 +332,7 @@
       const today = now.toISOString().split('T')[0];
       if (filter === 'today') {
         filteredAppointments = appointments.filter(appt => appt.date === today);
+        isFiltered = true;
       } else if (filter === 'week') {
         const weekStart = new Date(now);
         weekStart.setDate(now.getDate() - now.getDay());
@@ -249,35 +342,80 @@
           const apptDate = new Date(appt.date);
           return apptDate >= weekStart && apptDate <= weekEnd;
         });
+        isFiltered = true;
       } else {
         filteredAppointments = [...appointments];
+        isFiltered = false;
       }
       const searchTerm = searchInput.value.toLowerCase();
       if (searchTerm) {
         filteredAppointments = filteredAppointments.filter(appt => appt.client.toLowerCase().includes(searchTerm));
+        isFiltered = true;
       }
       renderAppointments();
     }
 
-    function showReminders() {
-      const now = new Date();
-      const tomorrow = new Date(now);
-      tomorrow.setDate(now.getDate() + 1);
-      const upcoming = appointments.filter(appt => {
-        const apptDate = new Date(`${appt.date}T${appt.time}`);
-        return apptDate > now && apptDate <= tomorrow;
-      });
-      if (upcoming.length > 0) {
-        alert(`Recordatorios: Tienes ${upcoming.length} turno(s) próximo(s).`);
+    function showDayAppointments(dateStr) {
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+      modalDate.textContent = `Turnos para ${new Date(dateStr).toLocaleDateString('es')}`;
+      modalAppointments.innerHTML = '';
+      if (dayAppointments.length === 0) {
+        modalAppointments.innerHTML = '<li>No hay turnos este día.</li>';
+      } else {
+        dayAppointments.forEach((appt, index) => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span>${appt.time} - ${appt.client}</span>
+            <button class="edit-btn" onclick="editAppointmentFromModal('${dateStr}', ${index})">Editar</button>
+            <button class="delete-btn" onclick="deleteAppointmentFromModal('${dateStr}', ${index})">Eliminar</button>
+          `;
+          modalAppointments.appendChild(li);
+        });
       }
+      modal.style.display = 'block';
     }
+
+    closeModal.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+    prevMonth.addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+
+    nextMonth.addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const client = document.getElementById('client').value;
       const date = document.getElementById('date').value;
       const time = document.getElementById('time').value;
-      appointments.push({ client, date, time });
+      const now = new Date();
+      const selectedDateTime = new Date(`${date}T${time}`);
+      if (selectedDateTime <= now) {
+        alert('No puedes agendar turnos en fechas u horas pasadas.');
+        return;
+      }
+      if (editingIndex !== null) {
+        appointments[editingIndex] = { client, date, time };
+        editingIndex = null;
+        document.getElementById('submit-btn').textContent = 'Agregar Turno';
+      } else {
+        appointments.push({ client, date, time });
+      }
       localStorage.setItem('appointments', JSON.stringify(appointments));
       form.reset();
       filterAppointments();
@@ -298,11 +436,26 @@
       renderCalendar();
     }
 
+    function editAppointmentFromModal(dateStr, index) {
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+      const appt = dayAppointments[index];
+      const globalIndex = appointments.indexOf(appt);
+      editAppointment(globalIndex);
+      modal.style.display = 'none';
+    }
+
+    function deleteAppointmentFromModal(dateStr, index) {
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+      const appt = dayAppointments[index];
+      const globalIndex = appointments.indexOf(appt);
+      deleteAppointment(globalIndex);
+      modal.style.display = 'none';
+    }
+
     // Inicializar
     filterAppointments();
     updateStats();
     renderCalendar();
-    showReminders();
   </script>
 </body>
 </html>
