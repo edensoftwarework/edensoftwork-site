@@ -193,8 +193,14 @@ section {
   transform: scale(1.05);
 }
 @media (max-width: 768px) {
+  .hero {
+    padding: 100px 20px 60px;
+  }
   .hero h1 {
     font-size: 2rem;
+  }
+  .hero p {
+    font-size: 1rem;
   }
   nav ul {
     flex-direction: column;
@@ -202,5 +208,49 @@ section {
   }
   nav ul li {
     margin: 10px 0;
+  }
+  .services {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .service-card {
+    padding: 20px;
+  }
+  .service-icon {
+    width: 40px;
+    height: 40px;
+  }
+  section {
+    padding: 0 15px;
+    margin: 60px auto;
+  }
+  .about, .contact {
+    padding: 40px 15px;
+  }
+  .contact form {
+    max-width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  .hero p {
+    font-size: 0.9rem;
+  }
+  .logo {
+    font-size: 1.5rem;
+  }
+  .service-card h3 {
+    font-size: 1.1rem;
+  }
+  .service-card p {
+    font-size: 0.9rem;
+  }
+  .about h2, .contact h2 {
+    font-size: 1.5rem;
+  }
+  footer p {
+    font-size: 0.9rem;
   }
 }
