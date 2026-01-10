@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Reservas de Citas - EDEN SoftWork</title>
+  <title>Sistema de Reservas de Turnos - EDEN SoftWork</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../styles.css">
   <style>
@@ -71,6 +71,40 @@
     .delete-btn:hover {
       background: #c53030;
     }
+    .filters {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filters input {
+      flex: 1;
+      min-width: 200px;
+    }
+    .stats {
+      margin: 20px 0;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .calendar {
+      margin: 20px 0;
+    }
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .calendar-day {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+      min-height: 60px;
+    }
+    .calendar-day.has-appointments {
+      background: #e3f2fd;
+    }
     .back-link {
       display: block;
       text-align: center;
@@ -85,16 +119,29 @@
 </head>
 <body>
   <div class="container">
-    <h1>Sistema de Reservas de Citas</h1>
-    <p>Agrega, visualiza y gestiona citas. Ideal para peluquerías, clínicas, talleres y cualquier negocio que requiera reservas.</p>
+    <h1>Sistema de Reservas de Turnos</h1>
+    <p>Agrega, visualiza y gestiona turnos. Ideal para peluquerías, clínicas, talleres y cualquier negocio que requiera reservas.</p>
     <form id="appointment-form">
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
       <input type="date" id="date" required>
       <input type="time" id="time" required>
-      <button type="submit">Agregar Cita</button>
-    </form>
-    <div class="appointments" id="appointments-list">
-      <h2>Citas Agendadas</h2>
+      <button type="submit">Agregar Turno</button>
+    </form>    <div class="filters">
+      <input type="text" id="search" placeholder="Buscar por cliente">
+      <button id="filter-today">Hoy</button>
+      <button id="filter-week">Esta Semana</button>
+      <button id="filter-all">Todos</button>
+    </div>
+    <div class="stats">
+      <p id="stats-total">Total de turnos: 0</p>
+      <p id="stats-today">Turnos hoy: 0</p>
+      <p id="stats-week">Turnos esta semana: 0</p>
+    </div>
+    <div class="calendar">
+      <h2>Calendario de Turnos</h2>
+      <div id="calendar"></div>
+    </div>    <div class="appointments" id="appointments-list">
+      <h2>Turnos Agendados</h2>
       <!-- Citas se agregarán aquí -->
     </div>
     <a href="../../index.html" class="back-link">Volver al Inicio</a>
@@ -103,26 +150,126 @@
   <script>
     const form = document.getElementById('appointment-form');
     const appointmentsList = document.getElementById('appointments-list');
+    const searchInput = document.getElementById('search');
+    const filterToday = document.getElementById('filter-today');
+    const filterWeek = document.getElementById('filter-week');
+    const filterAll = document.getElementById('filter-all');
+    const statsTotal = document.getElementById('stats-total');
+    const statsToday = document.getElementById('stats-today');
+    const statsWeek = document.getElementById('stats-week');
+    const calendar = document.getElementById('calendar');
     let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+    let filteredAppointments = [...appointments];
 
-    function renderAppointments() {
-      const list = appointmentsList.querySelector('h2').nextSibling;
-      if (list) list.remove();
-      if (appointments.length === 0) {
-        appointmentsList.innerHTML += '<p>No hay citas agendadas.</p>';
+    function renderAppointments(list = filteredAppointments) {
+      const ul = appointmentsList.querySelector('ul') || document.createElement('ul');
+      ul.innerHTML = '';
+      if (list.length === 0) {
+        appointmentsList.innerHTML = '<h2>Turnos Agendados</h2><p>No hay turnos agendados.</p>';
         return;
       }
-      const ul = document.createElement('ul');
-      appointments.forEach((appt, index) => {
+      list.forEach((appt, index) => {
         const li = document.createElement('li');
         li.className = 'appointment';
         li.innerHTML = `
           <span>${appt.client} - ${appt.date} ${appt.time}</span>
-          <button class="delete-btn" onclick="deleteAppointment(${index})">Eliminar</button>
+          <button class="delete-btn" onclick="deleteAppointment(${appointments.indexOf(appt)})">Eliminar</button>
         `;
         ul.appendChild(li);
       });
+      appointmentsList.innerHTML = '<h2>Turnos Agendados</h2>';
       appointmentsList.appendChild(ul);
+    }
+
+    function updateStats() {
+      const total = appointments.length;
+      const today = new Date().toISOString().split('T')[0];
+      const todayCount = appointments.filter(appt => appt.date === today).length;
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      const weekCount = appointments.filter(appt => {
+        const apptDate = new Date(appt.date);
+        return apptDate >= weekStart && apptDate <= weekEnd;
+      }).length;
+      statsTotal.textContent = `Total de turnos: ${total}`;
+      statsToday.textContent = `Turnos hoy: ${todayCount}`;
+      statsWeek.textContent = `Turnos esta semana: ${weekCount}`;
+    }
+
+    function renderCalendar() {
+      calendar.innerHTML = '';
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Días de la semana
+      const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      days.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day';
+        header.textContent = day;
+        calendar.appendChild(header);
+      });
+
+      // Espacios vacíos
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'calendar-day';
+        calendar.appendChild(empty);
+      }
+
+      // Días del mes
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        dayDiv.textContent = day;
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        if (appointments.some(appt => appt.date === dateStr)) {
+          dayDiv.classList.add('has-appointments');
+        }
+        calendar.appendChild(dayDiv);
+      }
+    }
+
+    function filterAppointments(filter = 'all') {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      if (filter === 'today') {
+        filteredAppointments = appointments.filter(appt => appt.date === today);
+      } else if (filter === 'week') {
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        filteredAppointments = appointments.filter(appt => {
+          const apptDate = new Date(appt.date);
+          return apptDate >= weekStart && apptDate <= weekEnd;
+        });
+      } else {
+        filteredAppointments = [...appointments];
+      }
+      const searchTerm = searchInput.value.toLowerCase();
+      if (searchTerm) {
+        filteredAppointments = filteredAppointments.filter(appt => appt.client.toLowerCase().includes(searchTerm));
+      }
+      renderAppointments();
+    }
+
+    function showReminders() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      const upcoming = appointments.filter(appt => {
+        const apptDate = new Date(`${appt.date}T${appt.time}`);
+        return apptDate > now && apptDate <= tomorrow;
+      });
+      if (upcoming.length > 0) {
+        alert(`Recordatorios: Tienes ${upcoming.length} turno(s) próximo(s).`);
+      }
     }
 
     form.addEventListener('submit', (e) => {
@@ -133,16 +280,29 @@
       appointments.push({ client, date, time });
       localStorage.setItem('appointments', JSON.stringify(appointments));
       form.reset();
-      renderAppointments();
+      filterAppointments();
+      updateStats();
+      renderCalendar();
     });
+
+    searchInput.addEventListener('input', () => filterAppointments());
+    filterToday.addEventListener('click', () => filterAppointments('today'));
+    filterWeek.addEventListener('click', () => filterAppointments('week'));
+    filterAll.addEventListener('click', () => filterAppointments('all'));
 
     function deleteAppointment(index) {
       appointments.splice(index, 1);
       localStorage.setItem('appointments', JSON.stringify(appointments));
-      renderAppointments();
+      filterAppointments();
+      updateStats();
+      renderCalendar();
     }
 
-    renderAppointments();
+    // Inicializar
+    filterAppointments();
+    updateStats();
+    renderCalendar();
+    showReminders();
   </script>
 </body>
 </html>
