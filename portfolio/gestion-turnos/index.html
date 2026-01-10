@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Reservas de Citas - EDEN SoftWork</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f4f4f4 0%, #e9ecef 100%);
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 30px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    input, button {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #5a67d8;
+    }
+    .appointments {
+      margin-top: 30px;
+    }
+    .appointment {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      background: #e53e3e;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background: #c53030;
+    }
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #667eea;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sistema de Reservas de Citas</h1>
+    <p>Agrega, visualiza y gestiona citas. Ideal para peluquerías, clínicas, talleres y cualquier negocio que requiera reservas.</p>
+    <form id="appointment-form">
+      <input type="text" id="client" placeholder="Nombre del Cliente" required>
+      <input type="date" id="date" required>
+      <input type="time" id="time" required>
+      <button type="submit">Agregar Cita</button>
+    </form>
+    <div class="appointments" id="appointments-list">
+      <h2>Citas Agendadas</h2>
+      <!-- Citas se agregarán aquí -->
+    </div>
+    <a href="../../index.html" class="back-link">Volver al Inicio</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('appointment-form');
+    const appointmentsList = document.getElementById('appointments-list');
+    let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+    function renderAppointments() {
+      const list = appointmentsList.querySelector('h2').nextSibling;
+      if (list) list.remove();
+      if (appointments.length === 0) {
+        appointmentsList.innerHTML += '<p>No hay citas agendadas.</p>';
+        return;
+      }
+      const ul = document.createElement('ul');
+      appointments.forEach((appt, index) => {
+        const li = document.createElement('li');
+        li.className = 'appointment';
+        li.innerHTML = `
+          <span>${appt.client} - ${appt.date} ${appt.time}</span>
+          <button class="delete-btn" onclick="deleteAppointment(${index})">Eliminar</button>
+        `;
+        ul.appendChild(li);
+      });
+      appointmentsList.appendChild(ul);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const client = document.getElementById('client').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      appointments.push({ client, date, time });
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+      form.reset();
+      renderAppointments();
+    });
+
+    function deleteAppointment(index) {
+      appointments.splice(index, 1);
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+      renderAppointments();
+    }
+
+    renderAppointments();
+  </script>
+</body>
+</html>

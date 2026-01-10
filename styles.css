@@ -131,6 +131,39 @@ section {
   max-width: 1200px;
   border: 1px solid #e9ecef;
 }
+.portfolio {
+  text-align: center;
+  background: white;
+  padding: 60px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin: 80px auto;
+  max-width: 1200px;
+  border: 1px solid #e9ecef;
+}
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+.portfolio-item {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+.portfolio-item:hover {
+  transform: translateY(-5px);
+}
+.portfolio-item h3 {
+  color: #667eea;
+  margin-bottom: 15px;
+}
+.portfolio-item p {
+  margin-bottom: 20px;
+}
 .contact {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
