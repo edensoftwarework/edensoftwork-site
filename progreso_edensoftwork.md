@@ -8,6 +8,8 @@ EDEN SoftWork es un emprendimiento de desarrollo de soluciones de software perso
 - **styles.css**: Estilos modulares con gradientes, íconos SVG, animaciones sutiles, y media queries para móvil/tablet.
 - **favicon.svg**: Icono simple para la pestaña del navegador.
 - **portfolio/gestion-turnos/index.html**: Sistema completo de Gestión de Turnos para el portfolio.
+- **portfolio/gestion-turnos/styles.css**: Estilos externos para el sistema de turnos.
+- **portfolio/gestion-turnos/script.js**: JavaScript externo para la lógica del sistema de turnos.
 - **README.md**: Archivo de documentación (si existe).
 - **progreso_edensoftwork.md**: Este archivo de progreso.
 
@@ -18,7 +20,7 @@ EDEN SoftWork es un emprendimiento de desarrollo de soluciones de software perso
 - **Tecnologías**: HTML5, CSS3, JavaScript básico para scroll suave y funcionalidad de proyectos.
 
 ## Proyecto Portfolio: Sistema de Gestión de Turnos
-Ubicación: `/portfolio/gestion-turnos/index.html`
+Ubicación: `/portfolio/gestion-turnos/`
 
 ### Funcionalidades Implementadas
 - **Agregar Turnos**: Formulario con campos para cliente, fecha, hora inicio y fin. Validaciones estrictas (horarios 08:00-22:00, no fechas pasadas, no superposiciones, autocalculo de 30 min para hora fin).
@@ -35,6 +37,7 @@ Ubicación: `/portfolio/gestion-turnos/index.html`
   - Turnos terminados: Gris, solo eliminables.
 - **Persistencia**: localStorage para guardar turnos entre sesiones.
 - **Interfaz**: Profesional, responsiva, con cursores indicadores, mensajes de error, y navegación intuitiva.
+- **Modularización**: Código separado en `index.html`, `styles.css` y `script.js` para mejor mantenibilidad.
 
 ### Tecnologías Usadas
 - **Frontend**: HTML5, CSS3 (Flexbox, Grid), JavaScript (Vanilla JS).
@@ -47,9 +50,11 @@ Ubicación: `/portfolio/gestion-turnos/index.html`
 - Sección Portfolio agregada al sitio principal con preview del primer proyecto.
 - Primer proyecto del portfolio completado: Sistema de Gestión de Turnos, un web app funcional y completo para reservas de citas.
 - Sistema incluye CRUD completo, validaciones avanzadas, interfaz visual intuitiva, y manejo de estados de turnos.
-- Modularizado, responsivo, y listo para uso.
+- Código modularizado en archivos separados (HTML, CSS, JS) para mejor organización y mantenibilidad.
+- Responsivo, listo para uso y presentación en portfolio.
 - Enlaces ajustados para navegación directa.
 - Usuario listo para commitear y pushear actualizaciones.
+- Proyecto concluido por ahora; listo para próximos desarrollos.
 
 ## Próximos Pasos
 1. Desarrollar más proyectos para portfolio (web apps simples sin backend inicialmente).

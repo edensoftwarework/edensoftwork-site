@@ -1,0 +1,348 @@
+body {
+  background: linear-gradient(135deg, #f4f4f4 0%, #e9ecef 100%);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h1 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 30px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+.date-time-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+}
+.date-time-row div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.date-time-row label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #555;
+}
+.date-time-row input {
+  flex: 1;
+}
+p {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 16px;
+}
+input, button {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+button {
+  background: #667eea;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #5a67d8;
+}
+.appointments {
+  margin-top: 30px;
+}
+.appointment {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.delete-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  background: #c53030;
+}
+.edit-btn {
+  background: #ffa500;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+.edit-btn:hover {
+  background: #e69500;
+}
+.filters {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filters input {
+  flex: 1;
+  min-width: 200px;
+}
+.stats {
+  margin: 20px 0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.calendar {
+  margin: 20px 0;
+}
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 10px;
+}
+.calendar-day {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  min-height: 60px;
+  cursor: pointer;
+}
+.calendar-day.has-appointments {
+  background: #e3f2fd;
+}
+.calendar-day.past {
+  background: #f5f5f5;
+  color: #999;
+}
+.calendar-day.today-active {
+  background: #1976d2; /* Azul oscuro */
+  color: white;
+}
+.calendar-day.today-past {
+  background: #616161; /* Gris oscuro */
+  color: white;
+}
+.calendar-day.today-no {
+  background: #757575; /* Gris más oscuro */
+  color: white;
+}
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.calendar-header button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  right: 5%;
+  bottom: 10%;
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  overflow-y: auto;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover {
+  color: #aaa;
+}
+#modal-date {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.time-slot {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  min-height: 50px;
+}
+.time-label {
+  width: 60px;
+  font-weight: bold;
+}
+.slot-free {
+  color: #999;
+  flex: 1;
+}
+.occupied {
+  background: #e3f2fd;
+}
+.slot-appointments {
+  flex: 1;
+}
+.appointment-item {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.timeline {
+  position: relative;
+  height: 560px;
+  padding-left: 70px;
+  border-left: 1px solid #ddd;
+}
+.timeline-hour {
+  position: relative;
+  height: 40px;
+  border-bottom: 1px solid #eee;
+}
+.hour-label {
+  position: absolute;
+  left: -60px;
+  top: -10px;
+  width: 50px;
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+  font-weight: bold;
+}
+.hour-line {
+  height: 1px;
+  background: #ddd;
+  margin-left: 10px;
+}
+.timeline-appointment {
+  position: absolute;
+  left: 80px;
+  right: 10px;
+  background: #667eea;
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  overflow: hidden;
+  z-index: 1;
+  cursor: pointer;
+}
+.timeline-appointment.past-appointment {
+  background: #ccc;
+  color: #666;
+}
+.appt-content {
+  font-weight: bold;
+}
+.action-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  display: none;
+}
+.action-menu button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border: none;
+  background: #667eea;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.action-menu button:hover {
+  background: #5a67d8;
+}
+.message-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+.message-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+}
+.message-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.message-close:hover {
+  color: black;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover {
+  color: black;
+}
+.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #667eea;
+  text-decoration: none;
+}
+.back-link:hover {
+  text-decoration: underline;
+}
