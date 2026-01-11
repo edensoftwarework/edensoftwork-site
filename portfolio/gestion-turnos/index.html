@@ -105,6 +105,7 @@
       display: flex;
       gap: 20px;
       flex-wrap: wrap;
+      justify-content: center;
     }
     .calendar {
       margin: 20px 0;
@@ -120,6 +121,7 @@
       border: 1px solid #ddd;
       text-align: center;
       min-height: 60px;
+      cursor: pointer;
     }
     .calendar-day.has-appointments {
       background: #e3f2fd;
@@ -127,6 +129,18 @@
     .calendar-day.past {
       background: #f5f5f5;
       color: #999;
+    }
+    .calendar-day.today-active {
+      background: #1976d2; /* Azul oscuro */
+      color: white;
+    }
+    .calendar-day.today-past {
+      background: #616161; /* Gris oscuro */
+      color: white;
+    }
+    .calendar-day.today-no {
+      background: #757575; /* Gris más oscuro */
+      color: white;
     }
     .calendar-header {
       display: flex;
@@ -222,6 +236,7 @@
       text-align: right;
       font-size: 12px;
       color: #666;
+      font-weight: bold;
     }
     .hour-line {
       height: 1px;
@@ -239,6 +254,11 @@
       font-size: 12px;
       overflow: hidden;
       z-index: 1;
+      cursor: pointer;
+    }
+    .timeline-appointment.past-appointment {
+      background: #ccc;
+      color: #666;
     }
     .appt-content {
       font-weight: bold;
@@ -266,6 +286,35 @@
     }
     .action-menu button:hover {
       background: #5a67d8;
+    }
+    .message-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .message-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .message-close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .message-close:hover {
+      color: black;
     }
     .close {
       color: #aaa;
@@ -297,8 +346,8 @@
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
       <input type="date" id="date" required>
       <div class="time-inputs">
-        <input type="time" id="start-time" placeholder="Inicio Turno" required>
-        <input type="time" id="end-time" placeholder="Fin Turno" required>
+        <input type="time" id="start-time" min="08:00" max="22:00" placeholder="Inicio Turno" required>
+        <input type="time" id="end-time" min="08:00" max="22:00" placeholder="Fin Turno" required>
       </div>
       <button type="submit" id="submit-btn">Agregar Turno</button>
     </form>
@@ -332,8 +381,33 @@
         <div id="time-slots"></div>
       </div>
     </div>
+    <div id="edit-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="edit-close">&times;</span>
+        <h3>Editar Turno</h3>
+        <form id="edit-form">
+          <input type="text" id="edit-client" placeholder="Nombre del cliente" required>
+          <input type="date" id="edit-date" required>
+          <div class="time-inputs">
+            <input type="time" id="edit-start-time" min="08:00" max="22:00" required>
+            <input type="time" id="edit-end-time" min="08:00" max="22:00" required>
+          </div>
+          <button type="submit">Actualizar Turno</button>
+          <button type="button" id="cancel-edit">Cancelar</button>
+        </form>
+      </div>
+    </div>
+    <div id="message-modal" class="message-modal">
+      <div class="message-content">
+        <span class="message-close">&times;</span>
+        <p id="message-text"></p>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 30px;"><a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a></p>
 
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('appointment-form');
     const appointmentsList = document.getElementById('appointments-list');
     const searchInput = document.getElementById('search');
@@ -350,15 +424,100 @@
     const modal = document.getElementById('day-modal');
     const modalDate = document.getElementById('modal-date');
     const modalAppointments = document.getElementById('time-slots');
+    const editModal = document.getElementById('edit-modal');
+    const editForm = document.getElementById('edit-form');
+    const editClient = document.getElementById('edit-client');
+    const editDate = document.getElementById('edit-date');
+    const editStartTime = document.getElementById('edit-start-time');
+    const editEndTime = document.getElementById('edit-end-time');
+    const cancelEdit = document.getElementById('cancel-edit');
+    const editClose = document.getElementById('edit-close');
+    let currentAppt = null;
+
+    function saveAppointments() {
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+    }
+
+    function saveAppointments() {
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+    }
+
+    editForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentAppt) return;
+      const client = editClient.value.trim();
+      const date = editDate.value;
+      const startTime = editStartTime.value;
+      const endTime = editEndTime.value;
+      if (!client || !date || !startTime || !endTime) {
+        showMessage('Todos los campos son obligatorios.');
+        return;
+      }
+      if (new Date(date + 'T00:00:00') < new Date(new Date().toDateString())) {
+        showMessage('No puedes agendar turnos en fechas pasadas.');
+        return;
+      }
+      if (startTime >= endTime) {
+        showMessage('La hora de fin debe ser posterior a la de inicio.');
+        return;
+      }
+      if (startTime < '08:00' || endTime > '22:00') {
+        showMessage('Los turnos deben estar entre 08:00 y 22:00.');
+        return;
+      }
+      const dayAppointments = appointments.filter(a => a.date === date && a !== currentAppt);
+      const overlap = dayAppointments.some(a => (startTime < a.endTime && endTime > a.startTime));
+      if (overlap) {
+        showMessage('Hay un conflicto de horario con otro turno.');
+        return;
+      }
+      // update
+      currentAppt.client = client;
+      currentAppt.date = date;
+      currentAppt.startTime = startTime;
+      currentAppt.endTime = endTime;
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+      updateStats();
+      renderCalendar();
+      renderAppointments();
+      // refresh day modal
+      showDayAppointments(date);
+      editModal.style.display = 'none';
+      modal.style.display = 'none';
+      showMessage('Turno actualizado correctamente.');
+      currentAppt = null;
+    });
+
+    cancelEdit.addEventListener('click', () => {
+      editModal.style.display = 'none';
+    });
+
+    editClose.addEventListener('click', () => {
+      editModal.style.display = 'none';
+    });
+
+    editStartTime.addEventListener('change', () => {
+      const start = editStartTime.value;
+      if (start) {
+        const [h, m] = start.split(':').map(Number);
+        const endH = h + Math.floor((m + 30) / 60);
+        const endM = (m + 30) % 60;
+        editEndTime.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+      }
+    });
     const closeModal = document.querySelector('.close');
     const startTimeInput = document.getElementById('start-time');
     const endTimeInput = document.getElementById('end-time');
+    const messageModal = document.getElementById('message-modal');
+    const messageText = document.getElementById('message-text');
+    const messageClose = document.querySelector('.message-close');
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    let filteredAppointments = [...appointments];
+    let filteredAppointments = [];
     let editingIndex = null;
-    let isFiltered = false;
+    let isFiltered = true;
+    let currentFilter = 'all';
 
     startTimeInput.addEventListener('change', () => {
       if (startTimeInput.value) {
@@ -368,6 +527,11 @@
         endTimeInput.value = endDate.toTimeString().slice(0, 5);
       }
     });
+
+    function showMessage(message) {
+      messageText.textContent = message;
+      messageModal.style.display = 'block';
+    }
 
     function renderAppointments(list = filteredAppointments) {
       if (!isFiltered) {
@@ -396,17 +560,18 @@
     }
 
     function updateStats() {
-      const total = appointments.length;
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const today = now.toISOString().slice(0, 10);
+      const total = appointments.filter(appt => appt.date >= today).length;
       const todayCount = appointments.filter(appt => appt.date === today).length;
-      const weekStart = new Date();
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const weekStart = new Date(now);
+      const dayOfWeek = now.getDay();
+      weekStart.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
       const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekEnd.getDate() + 6);
-      const weekCount = appointments.filter(appt => {
-        const apptDate = new Date(appt.date);
-        return apptDate >= weekStart && apptDate <= weekEnd;
-      }).length;
+      weekEnd.setDate(weekStart.getDate() + 6);
+      const weekStartStr = weekStart.toISOString().slice(0, 10);
+      const weekEndStr = weekEnd.toISOString().slice(0, 10);
+      const weekCount = appointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr).length;
       statsTotal.textContent = `Total de turnos: ${total}`;
       statsToday.textContent = `Turnos hoy: ${todayCount}`;
       statsWeek.textContent = `Turnos esta semana: ${weekCount}`;
@@ -445,46 +610,61 @@
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const hasAppointments = appointments.some(appt => appt.date === dateStr);
         const isPast = new Date(dateStr) < new Date(now.toDateString());
-        if (hasAppointments) {
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        const isToday = dateStr === todayStr;
+        if (isToday) {
+          const activeAppointments = appointments.filter(appt => appt.date === dateStr && new Date(`${dateStr}T${appt.endTime}`) > now);
+          if (activeAppointments.length > 0) {
+            dayDiv.classList.add('today-active');
+          } else if (hasAppointments) {
+            dayDiv.classList.add('today-past');
+          } else {
+            dayDiv.classList.add('today-no');
+          }
+        } else if (hasAppointments) {
           dayDiv.classList.add('has-appointments');
         }
-        if (isPast && hasAppointments) {
+        if (isPast && hasAppointments && !isToday) {
           dayDiv.classList.add('past');
         }
-        dayDiv.addEventListener('click', () => showDayAppointments(dateStr));
+        dayDiv.addEventListener('click', () => {
+          showDayAppointments(dateStr);
+        });
         calendar.appendChild(dayDiv);
       }
     }
 
     function filterAppointments(filter = 'all') {
       const now = new Date();
-      const today = now.toISOString().split('T')[0];
+      const todayStr = now.toISOString().slice(0, 10);
       if (filter === 'today') {
-        filteredAppointments = appointments.filter(appt => appt.date === today);
+        filteredAppointments = appointments.filter(appt => appt.date === todayStr);
         isFiltered = true;
       } else if (filter === 'week') {
         const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - now.getDay());
+        const dayOfWeek = now.getDay();
+        weekStart.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
         const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        filteredAppointments = appointments.filter(appt => {
-          const apptDate = new Date(appt.date);
-          return apptDate >= weekStart && apptDate <= weekEnd;
-        });
+        weekEnd.setDate(weekStart.getDate() + 6);
+        const weekStartStr = weekStart.toISOString().slice(0, 10);
+        const weekEndStr = weekEnd.toISOString().slice(0, 10);
+        filteredAppointments = appointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr);
         isFiltered = true;
       } else {
-        filteredAppointments = [...appointments];
-        isFiltered = false;
+        filteredAppointments = appointments.filter(appt => appt.date >= todayStr);
+        isFiltered = true;
       }
       const searchTerm = searchInput.value.toLowerCase();
       if (searchTerm) {
-        filteredAppointments = filteredAppointments.filter(appt => appt.client.toLowerCase().includes(searchTerm));
-        isFiltered = true;
+        filteredAppointments = filteredAppointments.filter(appt => appt.client.toLowerCase().startsWith(searchTerm));
       }
       renderAppointments();
     }
 
     function showDayAppointments(dateStr) {
+      if (!modalDate) {
+        return;
+      }
       const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.startTime.localeCompare(b.startTime));
       const date = new Date(dateStr + 'T00:00:00');
       const day = date.getDate();
@@ -513,6 +693,12 @@
         apptDiv.className = 'timeline-appointment';
         apptDiv.style.top = `${top}px`;
         apptDiv.style.height = `${height}px`;
+        const now = new Date();
+        const todayStr = now.toISOString().slice(0, 10);
+        const isPast = appt.date < todayStr || (appt.date === todayStr && now > new Date(`${appt.date}T${appt.endTime}`));
+        if (isPast) {
+          apptDiv.classList.add('past-appointment');
+        }
         apptDiv.innerHTML = `
           <div class="appt-content">${appt.startTime} - ${appt.endTime} ${appt.client}</div>
         `;
@@ -527,17 +713,23 @@
           menu.style.left = e.clientX + 'px';
           menu.style.top = e.clientY + 'px';
           menu.innerHTML = `
-            <button id="edit-btn">Editar</button>
+            ${isPast ? '' : '<button id="edit-btn">Editar</button>'}
             <button id="delete-btn">Eliminar</button>
           `;
           document.body.appendChild(menu);
           menu.style.display = 'block';
           // Event listeners
-          menu.querySelector('#edit-btn').addEventListener('click', () => {
-            editAppointment(appointments.indexOf(appt));
-            modal.style.display = 'none';
-            menu.remove();
-          });
+          if (!isPast) {
+            menu.querySelector('#edit-btn').addEventListener('click', () => {
+              currentAppt = appt;
+              editClient.value = appt.client;
+              editDate.value = appt.date;
+              editStartTime.value = appt.startTime;
+              editEndTime.value = appt.endTime;
+              editModal.style.display = 'block';
+              menu.remove();
+            });
+          }
           menu.querySelector('#delete-btn').addEventListener('click', () => {
             if (confirm('¿Estás seguro de que quieres eliminar este turno?')) {
               deleteAppointment(appointments.indexOf(appt));
@@ -558,15 +750,33 @@
       });
       modalAppointments.appendChild(timelineDiv);
       modal.style.display = 'block';
+    const closeBtn = modal.querySelector('.close');
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+    // Cerrar modal al hacer clic fuera del contenido
+    window.onclick = (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+      if (event.target === editModal) {
+        editModal.style.display = 'none';
+      }
+    };
+      console.log('Modal displayed');
     }
 
-    closeModal.addEventListener('click', () => modal.style.display = 'none');
+    messageClose.addEventListener('click', () => messageModal.style.display = 'none');
     window.addEventListener('click', (e) => {
-      if (e.target === modal) modal.style.display = 'none';
+      if (e.target === messageModal) messageModal.style.display = 'none';
     });
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.style.display === 'block') {
-        modal.style.display = 'none';
+      if (e.key === 'Escape') {
+        if (editModal.style.display === 'block') {
+          editModal.style.display = 'none';
+        } else if (modal.style.display === 'block') {
+          modal.style.display = 'none';
+        }
       }
     });
 
@@ -597,8 +807,21 @@
       const now = new Date();
       const selectedStart = new Date(`${date}T${startTime}`);
       const selectedEnd = new Date(`${date}T${endTime}`);
-      if (selectedStart <= now || selectedEnd <= selectedStart) {
-        alert('La hora de fin debe ser posterior a la de inicio y no en el pasado.');
+      if (startTime < '08:00' || endTime < '08:00') {
+        showMessage('Los turnos deben comenzar y terminar entre las 08:00 y 22:00.');
+        return;
+      }
+      if (startTime > '22:00' || endTime > '22:00') {
+        showMessage('Los turnos no pueden superar las 22:00.');
+        return;
+      }
+      if (selectedStart <= now) {
+        startTimeInput.setCustomValidity('No se pueden agendar turnos en fechas u horas pasadas.');
+        startTimeInput.reportValidity();
+        return;
+      }
+      if (selectedEnd <= selectedStart) {
+        showMessage('La hora de fin debe ser posterior a la hora de inicio.');
         return;
       }
       if (editingIndex !== null) {
@@ -608,21 +831,22 @@
       } else {
         appointments.push({ client, date, startTime, endTime });
       }
-      localStorage.setItem('appointments', JSON.stringify(appointments));
+      saveAppointments();
       form.reset();
+      startTimeInput.setCustomValidity('');
       filterAppointments();
       updateStats();
       renderCalendar();
     });
 
-    searchInput.addEventListener('input', () => filterAppointments());
-    filterToday.addEventListener('click', () => filterAppointments('today'));
-    filterWeek.addEventListener('click', () => filterAppointments('week'));
-    filterAll.addEventListener('click', () => filterAppointments('all'));
+    searchInput.addEventListener('input', () => filterAppointments(currentFilter));
+    filterToday.addEventListener('click', () => { currentFilter = 'today'; filterAppointments('today'); });
+    filterWeek.addEventListener('click', () => { currentFilter = 'week'; filterAppointments('week'); });
+    filterAll.addEventListener('click', () => { currentFilter = 'all'; filterAppointments('all'); });
 
     function deleteAppointment(index) {
       appointments.splice(index, 1);
-      localStorage.setItem('appointments', JSON.stringify(appointments));
+      saveAppointments();
       filterAppointments();
       updateStats();
       renderCalendar();
@@ -655,9 +879,9 @@
     }
 
     // Inicializar
-    filterAppointments();
     updateStats();
     renderCalendar();
+    });
   </script>
 </body>
 </html>
