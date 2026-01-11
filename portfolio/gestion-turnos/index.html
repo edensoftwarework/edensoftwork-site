@@ -32,12 +32,30 @@
       gap: 15px;
       margin-bottom: 30px;
     }
-    .time-inputs {
+    .date-time-row {
       display: flex;
       gap: 10px;
+      align-items: flex-start;
+      width: 100%;
     }
-    .time-inputs input {
+    .date-time-row div {
+      display: flex;
+      flex-direction: column;
       flex: 1;
+    }
+    .date-time-row label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    .date-time-row input {
+      flex: 1;
+    }
+    p {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 16px;
     }
     input, button {
       padding: 12px;
@@ -66,6 +84,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: pointer;
     }
     .delete-btn {
       background: #e53e3e;
@@ -341,13 +360,22 @@
 <body>
   <div class="container">
     <h1>Sistema de Reservas de Turnos</h1>
-    <p>Agrega, visualiza y gestiona turnos. Ideal para peluquerías, clínicas, talleres y cualquier negocio que requiera reservas.</p>
+    <p>Sistema para agregar, visualizar y gestionar turnos. Ideal para peluquerías, clínicas y talleres.</p>
     <form id="appointment-form">
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
-      <input type="date" id="date" required>
-      <div class="time-inputs">
-        <input type="time" id="start-time" min="08:00" max="22:00" placeholder="Inicio Turno" required>
-        <input type="time" id="end-time" min="08:00" max="22:00" placeholder="Fin Turno" required>
+      <div class="date-time-row">
+        <div>
+          <label for="date">Fecha turno</label>
+          <input type="date" id="date" required>
+        </div>
+        <div>
+          <label for="start-time">Horario de inicio turno</label>
+          <input type="time" id="start-time" min="08:00" max="22:00" required>
+        </div>
+        <div>
+          <label for="end-time">Horario de fin turno</label>
+          <input type="time" id="end-time" min="08:00" max="22:00" required>
+        </div>
       </div>
       <button type="submit" id="submit-btn">Agregar Turno</button>
     </form>
@@ -387,10 +415,19 @@
         <h3>Editar Turno</h3>
         <form id="edit-form">
           <input type="text" id="edit-client" placeholder="Nombre del cliente" required>
-          <input type="date" id="edit-date" required>
-          <div class="time-inputs">
-            <input type="time" id="edit-start-time" min="08:00" max="22:00" required>
-            <input type="time" id="edit-end-time" min="08:00" max="22:00" required>
+          <div class="date-time-row">
+            <div>
+              <label for="edit-date">Fecha turno</label>
+              <input type="date" id="edit-date" required>
+            </div>
+            <div>
+              <label for="edit-start-time">Horario de inicio turno</label>
+              <input type="time" id="edit-start-time" min="08:00" max="22:00" required>
+            </div>
+            <div>
+              <label for="edit-end-time">Horario de fin turno</label>
+              <input type="time" id="edit-end-time" min="08:00" max="22:00" required>
+            </div>
           </div>
           <button type="submit">Actualizar Turno</button>
           <button type="button" id="cancel-edit">Cancelar</button>
@@ -550,9 +587,51 @@
         li.className = 'appointment';
         li.innerHTML = `
           <span>${appt.client} - ${appt.date} ${appt.startTime} - ${appt.endTime}</span>
-          <button class="edit-btn" onclick="editAppointment(${appointments.indexOf(appt)})">Editar</button>
-          <button class="delete-btn" onclick="deleteAppointment(${appointments.indexOf(appt)})">Eliminar</button>
         `;
+        li.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Ocultar menú anterior si existe
+          const existingMenu = document.querySelector('.action-menu');
+          if (existingMenu) existingMenu.remove();
+          // Crear menú
+          const menu = document.createElement('div');
+          menu.className = 'action-menu';
+          menu.style.left = e.clientX + 'px';
+          menu.style.top = e.clientY + 'px';
+          const isPast = new Date(appt.date + 'T00:00:00') < new Date(new Date().toDateString());
+          menu.innerHTML = `
+            ${isPast ? '' : '<button id="edit-btn">Editar</button>'}
+            <button id="delete-btn">Eliminar</button>
+          `;
+          document.body.appendChild(menu);
+          menu.style.display = 'block';
+          // Event listeners
+          if (!isPast) {
+            menu.querySelector('#edit-btn').addEventListener('click', () => {
+              currentAppt = appt;
+              editClient.value = appt.client;
+              editDate.value = appt.date;
+              editStartTime.value = appt.startTime;
+              editEndTime.value = appt.endTime;
+              editModal.style.display = 'block';
+              menu.remove();
+            });
+          }
+          menu.querySelector('#delete-btn').addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que quieres eliminar este turno?')) {
+              deleteAppointment(appointments.indexOf(appt));
+            }
+            menu.remove();
+          });
+          // Cerrar al hacer clic fuera
+          const closeMenu = (event) => {
+            if (!menu.contains(event.target)) {
+              menu.remove();
+              document.removeEventListener('click', closeMenu);
+            }
+          };
+          setTimeout(() => document.addEventListener('click', closeMenu), 0);
+        });
         ul.appendChild(li);
       });
       appointmentsList.innerHTML = '<h2>Turnos Agendados</h2>';
