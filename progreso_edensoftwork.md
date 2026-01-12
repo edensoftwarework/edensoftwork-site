@@ -45,13 +45,40 @@ Ubicación: `/portfolio/gestion-turnos/`
 - **Validaciones**: JavaScript para horarios, fechas y conflictos.
 - **Diseño**: Colores consistentes, modales, animaciones sutiles.
 
+## Proyecto Portfolio: Sistema de Gestión de Inventario
+Ubicación: `/portfolio/gestion-inventario/`
+
+### Funcionalidades Implementadas
+- **Agregar Productos**: Formulario con campos para nombre, descripción, categoría, proveedor, precios, stock inicial, unidad y umbral bajo stock. Validaciones estrictas y autocalculo de valor total.
+- **Editar/Eliminar Productos**: Modal para edición con mismas validaciones; eliminación con confirmación, marcando como inactivo.
+- **Categorías y Proveedores**: Gestión integrada: agregar/editar categorías y proveedores con nombre y contacto.
+- **Movimientos de Stock**: Registro de entradas/salidas/ajustes con cantidad, fecha y notas. Actualización automática del stock.
+- **Vista de Inventario**: Tabla con paginación, columnas ordenables (Nombre, Categoría, Proveedor, Stock, Precio Venta, Valor Total). Indicadores visuales para bajo stock.
+- **Alertas de Bajo Stock**: Resaltado en tabla y estadísticas de productos por debajo del umbral.
+- **Búsqueda y Filtros Avanzados**:
+  - Búsqueda por nombre.
+  - Filtros por categoría, proveedor, nivel de stock (bajo/normal/alto), rango de precios.
+  - Combinables para consultas precisas.
+- **Estadísticas y Reportes**: Dashboard con total productos, valor inventario, productos bajo stock. Gráficos interactivos (pie para categorías, barras para niveles de stock) usando Chart.js.
+- **Exportación**: Descarga de tabla completa o filtrada a CSV usando PapaParse.
+- **Interfaz Visual**: Profesional, responsiva, con modales, tooltips, animaciones. Tema consistente con colores neutros.
+- **Estados y Validaciones**: Productos activos/inactivos, validaciones de campos, lógica de stock (no negativo en salidas).
+- **Persistencia**: localStorage para productos, categorías, proveedores y movimientos. Importación/exportación de datos JSON.
+- **Modularización**: Código separado en `index.html`, `styles.css` y `script.js`.
+
+### Tecnologías Usadas
+- **Frontend**: HTML5, CSS3 (Flexbox, Grid, Media Queries), JavaScript (Vanilla JS).
+- **Librerías Externas**: Chart.js para gráficos, PapaParse para CSV.
+- **Persistencia**: localStorage.
+- **Validaciones**: JavaScript para campos y lógica de negocio.
+- **Diseño**: Colores profesionales, íconos SVG, sombras y bordes redondeados.
+
 ## Progreso Actual
 - Sitio web básico completo y funcional.
-- Sección Portfolio agregada al sitio principal con preview del primer proyecto.
-- Primer proyecto del portfolio completado: Sistema de Gestión de Turnos, un web app funcional y completo para reservas de citas.
-- Sistema incluye CRUD completo, validaciones avanzadas, interfaz visual intuitiva, y manejo de estados de turnos.
-- Código modularizado en archivos separados (HTML, CSS, JS) para mejor organización y mantenibilidad.
-- Responsivo, listo para uso y presentación en portfolio.
+- Sección Portfolio agregada al sitio principal con preview de los proyectos.
+- Segundo proyecto del portfolio completado: Sistema de Gestión de Inventario, un web app completo para control de stock en pequeños negocios.
+- Sistema incluye CRUD avanzado, gestión de categorías/proveedores, movimientos de stock, filtros, estadísticas con gráficos, exportación CSV, y persistencia local.
+- Ambos proyectos modularizados, responsivos, y listos para presentación en portfolio.
 - Enlaces ajustados para navegación directa.
 - Usuario listo para commitear y pushear actualizaciones.
 - Proyecto concluido por ahora; listo para próximos desarrollos.

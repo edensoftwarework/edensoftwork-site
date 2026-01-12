@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Inventario - EDEN SoftWork</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Sistema de Gestión de Inventario</h1>
+    <p>Sistema para agregar, visualizar y gestionar productos en inventario. Ideal para pequeños negocios, tiendas y talleres.</p>
+
+    <!-- Estadísticas -->
+    <div class="stats">
+      <div>
+        <h3>Total de Productos</h3>
+        <p id="stats-total">0</p>
+      </div>
+      <div>
+        <h3>Valor Total del Inventario</h3>
+        <p id="stats-value">$0</p>
+      </div>
+      <div>
+        <h3>Productos con Bajo Stock</h3>
+        <p id="stats-low-stock">0</p>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
+    <div class="charts">
+      <div id="category-chart-container" style="display: none; width: 400px; margin: 0 auto;">
+        <canvas id="categoryChart"></canvas>
+      </div>
+      <canvas id="stockChart"></canvas>
+    </div>
+
+    <!-- Formulario Agregar Producto -->
+    <form id="product-form">
+      <input type="text" id="product-name" placeholder="Nombre del Producto" required>
+      <input type="text" id="product-description" placeholder="Descripción">
+      <select id="product-category" required>
+        <option value="">Seleccionar Categoría</option>
+      </select>
+      <select id="product-supplier" required>
+        <option value="">Seleccionar Proveedor</option>
+      </select>
+      <input type="number" id="purchase-price" placeholder="Precio de Compra" step="0.01" min="0" required>
+      <input type="number" id="sale-price" placeholder="Precio de Venta" step="0.01" min="0" required>
+      <input type="number" id="initial-stock" placeholder="Stock Inicial" min="0" required>
+      <input type="text" id="unit" placeholder="Unidad (ej. unidades, kg)" required>
+      <input type="number" id="low-stock-threshold" placeholder="Umbral Bajo Stock" min="0" value="10">
+      <button type="submit" id="submit-btn">Agregar Producto</button>
+    </form>
+
+    <!-- Botones de Gestión -->
+    <div class="management-buttons">
+      <button id="add-category-btn">Agregar Categoría</button>
+      <button id="add-supplier-btn">Agregar Proveedor</button>
+      <button id="add-movement-btn">Registrar Movimiento</button>
+      <button id="export-btn">Exportar a CSV</button>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="filters">
+      <input type="text" id="search" placeholder="Buscar por nombre">
+      <select id="filter-category">
+        <option value="">Todas las Categorías</option>
+      </select>
+      <select id="filter-supplier">
+        <option value="">Todos los Proveedores</option>
+      </select>
+      <select id="filter-stock">
+        <option value="">Todos los Niveles</option>
+        <option value="low">Bajo Stock</option>
+        <option value="normal">Normal</option>
+        <option value="high">Alto Stock</option>
+      </select>
+      <input type="number" id="filter-min-price" placeholder="Precio Mín">
+      <input type="number" id="filter-max-price" placeholder="Precio Máx">
+      <button id="clear-filters">Limpiar Filtros</button>
+    </div>
+
+    <!-- Tabla de Inventario -->
+    <div class="inventory-table">
+      <table id="products-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Proveedor</th>
+            <th>Stock</th>
+            <th>Precio Venta</th>
+            <th>Valor Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="products-tbody">
+          <!-- Productos se agregarán aquí -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modales -->
+    <div id="edit-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="edit-close">&times;</span>
+        <h3>Editar Producto</h3>
+        <form id="edit-form">
+          <input type="text" id="edit-name" placeholder="Nombre" required>
+          <input type="text" id="edit-description" placeholder="Descripción">
+          <select id="edit-category" required></select>
+          <select id="edit-supplier" required></select>
+          <input type="number" id="edit-purchase-price" step="0.01" min="0" required>
+          <input type="number" id="edit-sale-price" step="0.01" min="0" required>
+          <input type="number" id="edit-stock" min="0" required>
+          <input type="text" id="edit-unit" required>
+          <input type="number" id="edit-threshold" min="0">
+          <button type="submit">Actualizar Producto</button>
+          <button type="button" id="cancel-edit">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="category-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="category-close">&times;</span>
+        <h3>Agregar Categoría</h3>
+        <form id="category-form">
+          <input type="text" id="category-name" placeholder="Nombre de Categoría" required>
+          <button type="submit">Agregar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="supplier-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="supplier-close">&times;</span>
+        <h3>Agregar Proveedor</h3>
+        <form id="supplier-form">
+          <input type="text" id="supplier-name" placeholder="Nombre del Proveedor" required>
+          <input type="text" id="supplier-contact" placeholder="Contacto">
+          <button type="submit">Agregar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="movement-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="movement-close">&times;</span>
+        <h3>Registrar Movimiento</h3>
+        <form id="movement-form">
+          <select id="movement-product" required>
+            <option value="">Seleccionar Producto</option>
+          </select>
+          <select id="movement-type" required>
+            <option value="entrada">Entrada (Compra)</option>
+            <option value="salida">Salida (Venta)</option>
+            <option value="ajuste">Ajuste</option>
+          </select>
+          <input type="number" id="movement-quantity" placeholder="Cantidad" min="1" required>
+          <input type="date" id="movement-date" required>
+          <textarea id="movement-notes" placeholder="Notas"></textarea>
+          <button type="submit">Registrar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="message-modal" class="message-modal">
+      <div class="message-content">
+        <span class="message-close">&times;</span>
+        <p id="message-text"></p>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 30px;"><a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
