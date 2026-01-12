@@ -65,44 +65,51 @@
       </div>
     </div>
 
-    <!-- Filtros y Búsqueda -->
-    <div class="filters">
-      <input type="text" id="search" placeholder="Buscar por nombre">
-      <select id="filter-category">
-        <option value="">Todas las Categorías</option>
-      </select>
-      <select id="filter-supplier">
-        <option value="">Todos los Proveedores</option>
-      </select>
-      <select id="filter-stock">
-        <option value="">Todos los Niveles</option>
-        <option value="low">Bajo Stock</option>
-        <option value="normal">Normal</option>
-        <option value="high">Alto Stock</option>
-      </select>
-      <input type="number" id="filter-min-price" placeholder="Precio Mín">
-      <input type="number" id="filter-max-price" placeholder="Precio Máx">
-      <button id="clear-filters">Limpiar Filtros</button>
-    </div>
+    <!-- Sección de Inventario -->
+    <div class="inventory-section">
+      <h3>Inventario de Productos</h3>
 
-    <!-- Tabla de Inventario -->
-    <div class="inventory-table">
-      <table id="products-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Proveedor</th>
-            <th>Stock</th>
-            <th>Precio Venta</th>
-            <th>Valor Total</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="products-tbody">
-          <!-- Productos se agregarán aquí -->
-        </tbody>
-      </table>
+      <!-- Filtros y Búsqueda -->
+      <div class="filters">
+        <input type="text" id="search" placeholder="Buscar por nombre">
+        <select id="filter-category">
+          <option value="">Todas las Categorías</option>
+        </select>
+        <select id="filter-supplier">
+          <option value="">Todos los Proveedores</option>
+        </select>
+        <select id="filter-stock">
+          <option value="">Todos los Niveles</option>
+          <option value="low">Bajo Stock</option>
+          <option value="normal">Normal</option>
+          <option value="high">Alto Stock</option>
+        </select>
+        <input type="number" id="filter-min-price" placeholder="Precio Mín">
+        <input type="number" id="filter-max-price" placeholder="Precio Máx">
+        <button id="clear-filters">Limpiar Filtros</button>
+      </div>
+
+      <hr style="border: none; height: 2px; background: #ccc; margin: 30px 0;">
+
+      <!-- Tabla de Inventario -->
+      <div class="inventory-table">
+        <table id="products-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Proveedor</th>
+              <th>Stock</th>
+              <th>Precio Venta</th>
+              <th>Valor Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <!-- Productos se agregarán aquí -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Modales -->
