@@ -28,6 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockChartContainer = document.getElementById('stock-chart-container');
     const toggleValueChart = document.getElementById('toggle-value-chart');
     const valueChartContainer = document.getElementById('value-chart-container');
+    const toggleMovements = document.getElementById('toggle-movements');
+    const movementsContainer = document.getElementById('movements-container');
+    const filterMovementProduct = document.getElementById('filter-movement-product');
+    const filterMovementType = document.getElementById('filter-movement-type');
+    const filterMovementFrom = document.getElementById('filter-movement-from');
+    const filterMovementTo = document.getElementById('filter-movement-to');
+    const clearMovementFilters = document.getElementById('clear-movement-filters');
+    const toggleDetailedStats = document.getElementById('toggle-detailed-stats');
+    const detailedStatsContainer = document.getElementById('detailed-stats-container');
     const addProductBtn = document.getElementById('add-product-btn');
     const productModal = document.getElementById('product-modal');
 
@@ -120,6 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Actualizar estadísticas
     function updateStats(filtered = products) {
+        // Solo actualizar estadísticas detalladas si están visibles
+        if (detailedStatsContainer.style.display !== 'none') {
+            updateDetailedStats(filtered);
+        }
+    }
+
+    // Actualizar estadísticas detalladas
+    function updateDetailedStats(filtered = products) {
         const totalProducts = filtered.length;
         let totalValue = 0;
         let lowStockCount = 0;
@@ -132,6 +149,93 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('stats-total').textContent = totalProducts;
         document.getElementById('stats-value').textContent = `$${totalValue.toFixed(2)}`;
         document.getElementById('stats-low-stock').textContent = lowStockCount;
+
+        // Producto con Mayor Valor en Inventario
+        let topValueProduct = null;
+        let maxValue = 0;
+        filtered.forEach(p => {
+            const value = p.stock * p.salePrice;
+            if (value > maxValue) {
+                maxValue = value;
+                topValueProduct = p;
+            }
+        });
+        document.getElementById('stats-top-value-product').textContent =
+            topValueProduct ? `${topValueProduct.name} ($${maxValue.toFixed(2)})` : 'N/A';
+
+        // Categoría con Mayor Valor Total
+        const categoryValues = {};
+        filtered.forEach(p => {
+            const catName = categories.find(c => c.id === p.category)?.name || 'Sin Categoría';
+            const value = p.stock * p.salePrice;
+            categoryValues[catName] = (categoryValues[catName] || 0) + value;
+        });
+        let topCategory = null;
+        let maxCategoryValue = 0;
+        for (const [cat, value] of Object.entries(categoryValues)) {
+            if (value > maxCategoryValue) {
+                maxCategoryValue = value;
+                topCategory = cat;
+            }
+        }
+        document.getElementById('stats-top-value-category').textContent =
+            topCategory ? `${topCategory} ($${maxCategoryValue.toFixed(2)})` : 'N/A';
+
+        // Promedio de Precio de Venta por Categoría
+        const categoryPrices = {};
+        const categoryCounts = {};
+        filtered.forEach(p => {
+            const catName = categories.find(c => c.id === p.category)?.name || 'Sin Categoría';
+            categoryPrices[catName] = (categoryPrices[catName] || 0) + p.salePrice;
+            categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
+        });
+        let avgPriceCategory = null;
+        let maxAvgPrice = 0;
+        for (const [cat, totalPrice] of Object.entries(categoryPrices)) {
+            const avgPrice = totalPrice / categoryCounts[cat];
+            if (avgPrice > maxAvgPrice) {
+                maxAvgPrice = avgPrice;
+                avgPriceCategory = cat;
+            }
+        }
+        document.getElementById('stats-avg-price-category').textContent =
+            avgPriceCategory ? `${avgPriceCategory} ($${maxAvgPrice.toFixed(2)})` : 'N/A';
+
+        // Productos con Stock Crítico (0 unidades)
+        const criticalStockCount = filtered.filter(p => p.stock === 0).length;
+        document.getElementById('stats-critical-stock').textContent = criticalStockCount;
+
+        // Valor Total de Movimientos en el Último Mes
+        const now = new Date();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        let monthlyMovementValue = 0;
+        movements.forEach(m => {
+            const movementDate = new Date(m.date);
+            if (movementDate >= lastMonth) {
+                const product = filtered.find(p => p.id === m.productId);
+                if (product) {
+                    monthlyMovementValue += m.quantity * product.salePrice;
+                }
+            }
+        });
+        document.getElementById('stats-monthly-movements').textContent = `$${monthlyMovementValue.toFixed(2)}`;
+
+        // Proveedor con Más Productos Asignados
+        const supplierCounts = {};
+        filtered.forEach(p => {
+            const supName = suppliers.find(s => s.id === p.supplier)?.name || 'Sin Proveedor';
+            supplierCounts[supName] = (supplierCounts[supName] || 0) + 1;
+        });
+        let topSupplier = null;
+        let maxProducts = 0;
+        for (const [supplier, count] of Object.entries(supplierCounts)) {
+            if (count > maxProducts) {
+                maxProducts = count;
+                topSupplier = supplier;
+            }
+        }
+        document.getElementById('stats-top-supplier').textContent =
+            topSupplier ? `${topSupplier} (${maxProducts} productos)` : 'N/A';
     }
 
     // Renderizar gráficos
@@ -313,11 +417,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Renderizar historial de movimientos
+    function renderMovements(filteredMovements = movements) {
+        const movementsTbody = document.getElementById('movements-tbody');
+        movementsTbody.innerHTML = '';
+        const sortedMovements = [...filteredMovements].sort((a, b) => new Date(b.date) - new Date(a.date));
+        sortedMovements.forEach(movement => {
+            const product = products.find(p => p.id === movement.productId);
+            const productName = product ? product.name : 'Producto eliminado';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${movement.date}</td>
+                <td>${productName}</td>
+                <td>${movement.type}</td>
+                <td>${movement.quantity}</td>
+                <td>${movement.notes || ''}</td>
+            `;
+            movementsTbody.appendChild(row);
+        });
+    }
+
+    // Filtrar movimientos
+    function filterMovements() {
+        let filtered = movements.slice();
+        const productFilter = filterMovementProduct.value;
+        const typeFilter = filterMovementType.value;
+        const fromDate = filterMovementFrom.value;
+        const toDate = filterMovementTo.value;
+
+        if (productFilter) {
+            filtered = filtered.filter(m => m.productId === productFilter);
+        }
+        if (typeFilter) {
+            filtered = filtered.filter(m => m.type === typeFilter);
+        }
+        if (fromDate) {
+            filtered = filtered.filter(m => m.date >= fromDate);
+        }
+        if (toDate) {
+            filtered = filtered.filter(m => m.date <= toDate);
+        }
+
+        renderMovements(filtered);
+    }
+
     // Renderizar opciones de select
     function renderSelectOptions() {
         const categorySelects = [document.getElementById('product-category'), document.getElementById('edit-category'), filterCategory];
         const supplierSelects = [document.getElementById('product-supplier'), document.getElementById('edit-supplier'), filterSupplier];
         const productSelect = document.getElementById('movement-product');
+        const movementProductFilter = document.getElementById('filter-movement-product');
 
         categorySelects.forEach(select => {
             select.innerHTML = '<option value="">Seleccionar Categoría</option>';
@@ -334,8 +483,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         productSelect.innerHTML = '<option value="">Seleccionar Producto</option>';
+        movementProductFilter.innerHTML = '<option value="">Todos los Productos</option>';
         products.forEach(prod => {
             productSelect.innerHTML += `<option value="${prod.id}">${prod.name}</option>`;
+            movementProductFilter.innerHTML += `<option value="${prod.id}">${prod.name}</option>`;
         });
 
         // Reset filter values to avoid filtering with old IDs
@@ -568,27 +719,196 @@ document.addEventListener('DOMContentLoaded', () => {
         movementModal.style.display = 'none';
         filterProducts();
         renderCharts();
+        filterMovements(); // Re-render movements with current filters
         showMessage('Movimiento registrado.');
     });
 
-    // Exportar a CSV
-    exportBtn.addEventListener('click', () => {
-        const csv = Papa.unparse(products.map(p => ({
-            Nombre: p.name,
-            Descripción: p.description,
-            Categoría: categories.find(c => c.id === p.category)?.name || '',
-            Proveedor: suppliers.find(s => s.id === p.supplier)?.name || '',
-            'Precio Compra': p.purchasePrice,
-            'Precio Venta': p.salePrice,
-            Stock: p.stock,
-            Unidad: p.unit,
-            'Umbral Bajo': p.lowStockThreshold
-        })));
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    // Exportar a Excel
+    exportBtn.addEventListener('click', async () => {
+        // Mostrar gráficos temporalmente para capturar
+        const wasCategoryVisible = categoryChartContainer.style.display !== 'none';
+        const wasStockVisible = stockChartContainer.style.display !== 'none';
+        const wasValueVisible = valueChartContainer.style.display !== 'none';
+        categoryChartContainer.style.display = 'block';
+        stockChartContainer.style.display = 'block';
+        valueChartContainer.style.display = 'block';
+        renderCharts();
+        await new Promise(resolve => setTimeout(resolve, 500)); // Esperar render
+
+        const workbook = new ExcelJS.Workbook();
+
+        // Hoja de Productos
+        const productSheet = workbook.addWorksheet('Productos');
+        productSheet.columns = [
+            { header: 'Nombre', key: 'name' },
+            { header: 'Descripción', key: 'description' },
+            { header: 'Categoría', key: 'category' },
+            { header: 'Proveedor', key: 'supplier' },
+            { header: 'Precio Compra', key: 'purchasePrice' },
+            { header: 'Precio Venta', key: 'salePrice' },
+            { header: 'Stock', key: 'stock' },
+            { header: 'Unidad', key: 'unit' },
+            { header: 'Umbral Bajo', key: 'lowStockThreshold' }
+        ];
+        products.forEach(p => {
+            productSheet.addRow({
+                name: p.name,
+                description: p.description,
+                category: categories.find(c => c.id === p.category)?.name || '',
+                supplier: suppliers.find(s => s.id === p.supplier)?.name || '',
+                purchasePrice: p.purchasePrice,
+                salePrice: p.salePrice,
+                stock: p.stock,
+                unit: p.unit,
+                lowStockThreshold: p.lowStockThreshold
+            });
+        });
+
+        // Hoja de Estadísticas
+        const statsSheet = workbook.addWorksheet('Estadísticas');
+        const totalProducts = products.length;
+        const totalValue = products.reduce((sum, p) => sum + (p.stock * p.salePrice), 0);
+        const lowStockCount = products.filter(p => p.stock <= p.lowStockThreshold).length;
+
+        // Calcular estadísticas detalladas
+        let topValueProduct = null;
+        let maxValue = 0;
+        products.forEach(p => {
+            const value = p.stock * p.salePrice;
+            if (value > maxValue) {
+                maxValue = value;
+                topValueProduct = p;
+            }
+        });
+
+        const categoryValues = {};
+        products.forEach(p => {
+            const catName = categories.find(c => c.id === p.category)?.name || 'Sin Categoría';
+            const value = p.stock * p.salePrice;
+            categoryValues[catName] = (categoryValues[catName] || 0) + value;
+        });
+        let topCategory = null;
+        let maxCategoryValue = 0;
+        for (const [cat, value] of Object.entries(categoryValues)) {
+            if (value > maxCategoryValue) {
+                maxCategoryValue = value;
+                topCategory = cat;
+            }
+        }
+
+        const categoryPrices = {};
+        const categoryCounts = {};
+        products.forEach(p => {
+            const catName = categories.find(c => c.id === p.category)?.name || 'Sin Categoría';
+            categoryPrices[catName] = (categoryPrices[catName] || 0) + p.salePrice;
+            categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
+        });
+        let avgPriceCategory = null;
+        let maxAvgPrice = 0;
+        for (const [cat, totalPrice] of Object.entries(categoryPrices)) {
+            const avgPrice = totalPrice / categoryCounts[cat];
+            if (avgPrice > maxAvgPrice) {
+                maxAvgPrice = avgPrice;
+                avgPriceCategory = cat;
+            }
+        }
+
+        const criticalStockCount = products.filter(p => p.stock === 0).length;
+
+        const now = new Date();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        let monthlyMovementValue = 0;
+        movements.forEach(m => {
+            const movementDate = new Date(m.date);
+            if (movementDate >= lastMonth) {
+                const product = products.find(p => p.id === m.productId);
+                if (product) {
+                    monthlyMovementValue += m.quantity * product.salePrice;
+                }
+            }
+        });
+
+        const supplierCounts = {};
+        products.forEach(p => {
+            const supName = suppliers.find(s => s.id === p.supplier)?.name || 'Sin Proveedor';
+            supplierCounts[supName] = (supplierCounts[supName] || 0) + 1;
+        });
+        let topSupplier = null;
+        let maxProducts = 0;
+        for (const [supplier, count] of Object.entries(supplierCounts)) {
+            if (count > maxProducts) {
+                maxProducts = count;
+                topSupplier = supplier;
+            }
+        }
+
+        statsSheet.addRow(['ESTADÍSTICAS DEL INVENTARIO']);
+        statsSheet.addRow(['']);
+        statsSheet.addRow(['Total de Productos', totalProducts]);
+        statsSheet.addRow(['Valor Total del Inventario', `$${totalValue.toFixed(2)}`]);
+        statsSheet.addRow(['Productos con Bajo Stock', lowStockCount]);
+        statsSheet.addRow(['Producto con Mayor Valor', topValueProduct ? `${topValueProduct.name} ($${maxValue.toFixed(2)})` : 'N/A']);
+        statsSheet.addRow(['Categoría con Mayor Valor', topCategory ? `${topCategory} ($${maxCategoryValue.toFixed(2)})` : 'N/A']);
+        statsSheet.addRow(['Promedio Precio por Categoría', avgPriceCategory ? `${avgPriceCategory} ($${maxAvgPrice.toFixed(2)})` : 'N/A']);
+        statsSheet.addRow(['Valor Movimientos Último Mes', `$${monthlyMovementValue.toFixed(2)}`]);
+        statsSheet.addRow(['Productos sin Stock', criticalStockCount]);
+        statsSheet.addRow(['Proveedor con Más Productos', topSupplier ? `${topSupplier} (${maxProducts} productos)` : 'N/A']);
+
+        // Hoja de Movimientos
+        const movementsSheet = workbook.addWorksheet('Movimientos');
+        movementsSheet.columns = [
+            { header: 'Fecha', key: 'date' },
+            { header: 'Producto', key: 'product' },
+            { header: 'Tipo', key: 'type' },
+            { header: 'Cantidad', key: 'quantity' },
+            { header: 'Notas', key: 'notes' }
+        ];
+        const sortedMovements = [...movements].sort((a, b) => new Date(b.date) - new Date(a.date));
+        sortedMovements.forEach(movement => {
+            const product = products.find(p => p.id === movement.productId);
+            movementsSheet.addRow({
+                date: movement.date,
+                product: product ? product.name : 'Producto eliminado',
+                type: movement.type === 'entrada' ? 'Entrada' : movement.type === 'salida' ? 'Salida' : 'Ajuste',
+                quantity: movement.quantity,
+                notes: movement.notes || ''
+            });
+        });
+
+        // Hoja de Gráficos
+        const chartSheet = workbook.addWorksheet('Gráficos');
+        let imageId1, imageId2, imageId3;
+        if (categoryChart) {
+            const categoryImage = categoryChart.canvas.toDataURL('image/png').split(',')[1];
+            imageId1 = workbook.addImage({ base64: categoryImage, extension: 'png' });
+            chartSheet.addImage(imageId1, 'A1:D15');
+            chartSheet.getCell('A16').value = 'Gráfico de Categorías';
+        }
+        if (stockChart) {
+            const stockImage = stockChart.canvas.toDataURL('image/png').split(',')[1];
+            imageId2 = workbook.addImage({ base64: stockImage, extension: 'png' });
+            chartSheet.addImage(imageId2, 'A18:D32');
+            chartSheet.getCell('A33').value = 'Gráfico de Niveles de Stock';
+        }
+        if (valueChart) {
+            const valueImage = valueChart.canvas.toDataURL('image/png').split(',')[1];
+            imageId3 = workbook.addImage({ base64: valueImage, extension: 'png' });
+            chartSheet.addImage(imageId3, 'A35:D49');
+            chartSheet.getCell('A50').value = 'Gráfico de Valor por Producto';
+        }
+
+        // Generar y descargar
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'inventario.csv';
+        link.download = 'inventario.xlsx';
         link.click();
+
+        // Restaurar visibilidad
+        categoryChartContainer.style.display = wasCategoryVisible ? 'block' : 'none';
+        stockChartContainer.style.display = wasStockVisible ? 'block' : 'none';
+        valueChartContainer.style.display = wasValueVisible ? 'block' : 'none';
     });
 
     // Eventos de filtros
@@ -657,6 +977,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isVisible) {
             renderCharts(); // Renderizar solo cuando se muestra
         }
+    });
+
+    // Evento toggle historial de movimientos
+    toggleMovements.addEventListener('click', () => {
+        const isVisible = movementsContainer.style.display !== 'none';
+        movementsContainer.style.display = isVisible ? 'none' : 'block';
+        toggleMovements.textContent = isVisible ? 'Ver Historial de Movimientos' : 'Ocultar Historial de Movimientos';
+        if (!isVisible) {
+            filterMovements(); // Renderizar solo cuando se muestra
+        }
+    });
+
+    // Evento toggle estadísticas detalladas
+    toggleDetailedStats.addEventListener('click', () => {
+        const isVisible = detailedStatsContainer.style.display !== 'none';
+        detailedStatsContainer.style.display = isVisible ? 'none' : 'block';
+        toggleDetailedStats.textContent = isVisible ? 'Ver Todas las Estadísticas' : 'Ocultar Estadísticas';
+        if (!isVisible) {
+            updateDetailedStats(); // Calcular estadísticas solo cuando se muestra
+        }
+    });
+
+    // Eventos de filtros de movimientos
+    filterMovementProduct.addEventListener('change', filterMovements);
+    filterMovementType.addEventListener('change', filterMovements);
+    filterMovementFrom.addEventListener('change', filterMovements);
+    filterMovementTo.addEventListener('change', filterMovements);
+
+    // Evento limpiar filtros de movimientos
+    clearMovementFilters.addEventListener('click', () => {
+        filterMovementProduct.value = '';
+        filterMovementType.value = '';
+        filterMovementFrom.value = '';
+        filterMovementTo.value = '';
+        filterMovements();
     });
 
     // Cerrar modales con tecla Escape

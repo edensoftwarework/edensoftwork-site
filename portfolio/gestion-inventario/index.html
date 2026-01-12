@@ -9,46 +9,83 @@
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Sistema de Gestión de Inventario</h1>
     <p>Sistema para agregar, visualizar y gestionar productos en inventario. Ideal para pequeños negocios, tiendas y talleres.</p>
 
-    <!-- Estadísticas -->
-    <div class="stats">
-      <div>
-        <h3>Total de Productos</h3>
-        <p id="stats-total">0</p>
-      </div>
-      <div>
-        <h3>Valor Total del Inventario</h3>
-        <p id="stats-value">$0</p>
-      </div>
-      <div>
-        <h3>Productos con Bajo Stock</h3>
-        <p id="stats-low-stock">0</p>
-      </div>
-    </div>
+    <!-- Sección de Estadísticas -->
+    <div class="stats-section">
+      <h3>Estadísticas y Gráficos</h3>
 
-    <!-- Gráficos -->
-    <div class="chart-sections">
-      <div class="chart-section">
-        <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
-        <div id="category-chart-container" style="display: none; margin: 10px auto;">
-          <canvas id="categoryChart" width="400" height="400"></canvas>
+      <!-- Estadísticas Detalladas -->
+      <div style="text-align: center; margin: 20px 0;">
+        <button id="toggle-detailed-stats" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Ver Todas las Estadísticas</button>
+      </div>
+      <div id="detailed-stats-container" style="display: none; margin-top: 20px; margin-bottom: 40px;">
+        <div class="detailed-stats">
+          <div class="stat-group">
+            <h4>Total de Productos</h4>
+            <p id="stats-total">0</p>
+          </div>
+          <div class="stat-group">
+            <h4>Valor Total del Inventario</h4>
+            <p id="stats-value">$0</p>
+          </div>
+          <div class="stat-group">
+            <h4>Productos con Bajo Stock</h4>
+            <p id="stats-low-stock">0</p>
+          </div>
+          <div class="stat-group">
+            <h4>Producto con Mayor Valor</h4>
+            <p id="stats-top-value-product">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Categoría con Mayor Valor</h4>
+            <p id="stats-top-value-category">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Promedio Precio por Categoría</h4>
+            <p id="stats-avg-price-category">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Valor Movimientos Último Mes</h4>
+            <p id="stats-monthly-movements">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Productos sin Stock</h4>
+            <p id="stats-critical-stock">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Proveedor con Más Productos</h4>
+            <p id="stats-top-supplier">Cargando...</p>
+          </div>
         </div>
       </div>
-      <div class="chart-section">
-        <button id="toggle-stock-chart">Ver Gráfico de Niveles de Stock</button>
-        <div id="stock-chart-container" style="display: none; margin: 10px auto;">
-          <canvas id="stockChart" width="400" height="400"></canvas>
+
+      <hr style="border: none; height: 2px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); margin: 40px 0;">
+
+      <!-- Gráficos -->
+      <div class="chart-sections">
+        <div class="chart-section">
+          <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
+          <div id="category-chart-container" style="display: none; margin: 10px auto;">
+            <canvas id="categoryChart" width="400" height="400"></canvas>
+          </div>
         </div>
-      </div>
-      <div class="chart-section">
-        <button id="toggle-value-chart">Ver Gráfico de Valor por Producto</button>
-        <div id="value-chart-container" style="display: none; margin: 10px auto;">
-          <canvas id="valueChart" width="400" height="400"></canvas>
+        <div class="chart-section">
+          <button id="toggle-stock-chart">Ver Gráfico de Niveles de Stock</button>
+          <div id="stock-chart-container" style="display: none; margin: 10px auto;">
+            <canvas id="stockChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+        <div class="chart-section">
+          <button id="toggle-value-chart">Ver Gráfico de Valor por Producto</button>
+          <div id="value-chart-container" style="display: none; margin: 10px auto;">
+            <canvas id="valueChart" width="400" height="400"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +98,7 @@
         <button id="add-category-btn">Agregar Categoría</button>
         <button id="add-supplier-btn">Agregar Proveedor</button>
         <button id="add-movement-btn">Registrar Movimiento</button>
-        <button id="export-btn">Exportar a CSV</button>
+        <button id="export-btn">Exportar a Excel</button>
       </div>
     </div>
 
@@ -212,6 +249,59 @@
           <button type="submit" id="submit-product-btn">Agregar Producto</button>
           <button type="button" id="cancel-product">Cancelar</button>
         </form>
+      </div>
+    </div>
+
+    <!-- Sección de Historial de Movimientos -->
+    <div class="movements-section">
+      <h3>Historial de Movimientos</h3>
+      <button id="toggle-movements">Ver Historial de Movimientos</button>
+      <div id="movements-container" style="display: none; margin-top: 20px;">
+        <!-- Filtros para movimientos -->
+        <div class="filters" style="margin-bottom: 20px; display: flex; gap: 25px; flex-wrap: wrap; align-items: center; justify-content: center;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <label for="filter-movement-product" style="font-size: 12px; margin-bottom: 5px;">Producto</label>
+            <select id="filter-movement-product">
+              <option value="">Todos los Productos</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <label for="filter-movement-type" style="font-size: 12px; margin-bottom: 5px;">Movimiento</label>
+            <select id="filter-movement-type">
+              <option value="">Todos los Tipos</option>
+              <option value="entrada">Entrada</option>
+              <option value="salida">Salida</option>
+              <option value="ajuste">Ajuste</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <label for="filter-movement-from" style="font-size: 12px; margin-bottom: 5px;">Fecha Desde</label>
+            <input type="date" id="filter-movement-from">
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <label for="filter-movement-to" style="font-size: 12px; margin-bottom: 5px;">Fecha Hasta</label>
+            <input type="date" id="filter-movement-to">
+          </div>
+          <div style="display: flex; align-items: flex-end;">
+            <button id="clear-movement-filters" style="padding: 8px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Limpiar Filtros</button>
+          </div>
+        </div>
+        <div class="inventory-table">
+          <table id="movements-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Notas</th>
+              </tr>
+            </thead>
+            <tbody id="movements-tbody">
+              <!-- Movimientos se agregarán aquí -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
