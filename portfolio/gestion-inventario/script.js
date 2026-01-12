@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageText = document.getElementById('message-text');
     const toggleCategoryChart = document.getElementById('toggle-category-chart');
     const categoryChartContainer = document.getElementById('category-chart-container');
+    const toggleStockChart = document.getElementById('toggle-stock-chart');
+    const stockChartContainer = document.getElementById('stock-chart-container');
 
     // Datos
     let products = JSON.parse(localStorage.getItem('inventory-products')) || [];
@@ -87,11 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     }]
                 },
                 options: {
-                    responsive: true,
+                    responsive: false,
+                    maintainAspectRatio: false,
                     plugins: {
                         title: {
                             display: true,
                             text: 'Productos por Categoría'
+                        },
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
                         },
                         tooltip: {
                             enabled: false
@@ -108,26 +119,61 @@ document.addEventListener('DOMContentLoaded', () => {
             return acc;
         }, { low: 0, normal: 0, high: 0 });
 
-        if (stockChart) stockChart.destroy();
-        stockChart = new Chart(document.getElementById('stockChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Bajo Stock', 'Normal', 'Alto Stock'],
-                datasets: [{
-                    data: [stockLevels.low, stockLevels.normal, stockLevels.high],
-                    backgroundColor: ['#e53e3e', '#ffa500', '#38a169']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Niveles de Stock'
+        if (stockChartContainer.style.display !== 'none') {
+            if (stockChart) stockChart.destroy();
+            stockChart = new Chart(document.getElementById('stockChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Bajo Stock', 'Normal', 'Alto Stock'],
+                    datasets: [{
+                        data: [stockLevels.low, stockLevels.normal, stockLevels.high],
+                        backgroundColor: ['#e53e3e', '#ffa500', '#38a169']
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) { return Number.isInteger(value) ? value : null; },
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Cantidad de productos',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Niveles de Stock'
+                        },
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     // Renderizar opciones de select
@@ -435,6 +481,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const isVisible = categoryChartContainer.style.display !== 'none';
         categoryChartContainer.style.display = isVisible ? 'none' : 'block';
         toggleCategoryChart.textContent = isVisible ? 'Ver Gráfico de Categorías' : 'Ocultar Gráfico de Categorías';
+        if (!isVisible) {
+            renderCharts(); // Renderizar solo cuando se muestra
+        }
+    });
+
+    // Evento toggle gráfico de niveles de stock
+    toggleStockChart.addEventListener('click', () => {
+        const isVisible = stockChartContainer.style.display !== 'none';
+        stockChartContainer.style.display = isVisible ? 'none' : 'block';
+        toggleStockChart.textContent = isVisible ? 'Ver Gráfico de Niveles de Stock' : 'Ocultar Gráfico de Niveles de Stock';
         if (!isVisible) {
             renderCharts(); // Renderizar solo cuando se muestra
         }

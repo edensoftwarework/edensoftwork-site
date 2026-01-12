@@ -32,12 +32,19 @@
     </div>
 
     <!-- Gráficos -->
-    <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
-    <div class="charts">
-      <div id="category-chart-container" style="display: none; width: 400px; margin: 0 auto;">
-        <canvas id="categoryChart"></canvas>
+    <div class="chart-sections">
+      <div class="chart-section">
+        <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
+        <div id="category-chart-container" style="display: none; margin: 10px auto;">
+          <canvas id="categoryChart" width="400" height="400"></canvas>
+        </div>
       </div>
-      <canvas id="stockChart"></canvas>
+      <div class="chart-section">
+        <button id="toggle-stock-chart">Ver Gráfico de Niveles de Stock</button>
+        <div id="stock-chart-container" style="display: none; margin: 10px auto;">
+          <canvas id="stockChart" width="400" height="400"></canvas>
+        </div>
+      </div>
     </div>
 
     <!-- Formulario Agregar Producto -->
