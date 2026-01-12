@@ -81,9 +81,24 @@ button:hover {
 }
 .management-buttons {
   display: flex;
-  gap: 10px;
+  gap: 55px;
   flex-wrap: wrap;
   margin-bottom: 20px;
+  justify-content: center;
+}
+.management-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin: 30px 0;
+  text-align: center;
+}
+.management-section h3 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 500;
 }
 .filters {
   display: flex;

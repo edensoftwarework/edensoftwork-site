@@ -45,32 +45,24 @@
           <canvas id="stockChart" width="400" height="400"></canvas>
         </div>
       </div>
+      <div class="chart-section">
+        <button id="toggle-value-chart">Ver Gráfico de Valor por Producto</button>
+        <div id="value-chart-container" style="display: none; margin: 10px auto;">
+          <canvas id="valueChart" width="400" height="400"></canvas>
+        </div>
+      </div>
     </div>
 
-    <!-- Formulario Agregar Producto -->
-    <form id="product-form">
-      <input type="text" id="product-name" placeholder="Nombre del Producto" required>
-      <input type="text" id="product-description" placeholder="Descripción">
-      <select id="product-category" required>
-        <option value="">Seleccionar Categoría</option>
-      </select>
-      <select id="product-supplier" required>
-        <option value="">Seleccionar Proveedor</option>
-      </select>
-      <input type="number" id="purchase-price" placeholder="Precio de Compra" step="0.01" min="0" required>
-      <input type="number" id="sale-price" placeholder="Precio de Venta" step="0.01" min="0" required>
-      <input type="number" id="initial-stock" placeholder="Stock Inicial" min="0" required>
-      <input type="text" id="unit" placeholder="Unidad (ej. unidades, kg)" required>
-      <input type="number" id="low-stock-threshold" placeholder="Umbral Bajo Stock" min="0" value="10">
-      <button type="submit" id="submit-btn">Agregar Producto</button>
-    </form>
-
-    <!-- Botones de Gestión -->
-    <div class="management-buttons">
-      <button id="add-category-btn">Agregar Categoría</button>
-      <button id="add-supplier-btn">Agregar Proveedor</button>
-      <button id="add-movement-btn">Registrar Movimiento</button>
-      <button id="export-btn">Exportar a CSV</button>
+    <!-- Sección de Gestión -->
+    <div class="management-section">
+      <h3>Herramientas de Gestión</h3>
+      <div class="management-buttons">
+        <button id="add-product-btn">Agregar Producto</button>
+        <button id="add-category-btn">Agregar Categoría</button>
+        <button id="add-supplier-btn">Agregar Proveedor</button>
+        <button id="add-movement-btn">Registrar Movimiento</button>
+        <button id="export-btn">Exportar a CSV</button>
+      </div>
     </div>
 
     <!-- Filtros y Búsqueda -->
@@ -182,6 +174,37 @@
       <div class="message-content">
         <span class="message-close">&times;</span>
         <p id="message-text"></p>
+      </div>
+    </div>
+
+    <div id="category-products-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="category-products-close">&times;</span>
+        <div id="category-products-text"></div>
+      </div>
+    </div>
+
+    <div id="product-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="product-close">&times;</span>
+        <h3>Agregar Producto</h3>
+        <form id="product-form">
+          <input type="text" id="product-name" placeholder="Nombre del Producto" required>
+          <input type="text" id="product-description" placeholder="Descripción">
+          <select id="product-category" required>
+            <option value="">Seleccionar Categoría</option>
+          </select>
+          <select id="product-supplier" required>
+            <option value="">Seleccionar Proveedor</option>
+          </select>
+          <input type="number" id="purchase-price" placeholder="Precio de Compra" step="0.01" min="0" required>
+          <input type="number" id="sale-price" placeholder="Precio de Venta" step="0.01" min="0" required>
+          <input type="number" id="initial-stock" placeholder="Stock Inicial" min="0" required>
+          <input type="text" id="unit" placeholder="Unidad (ej. unidades, kg)" required>
+          <input type="number" id="low-stock-threshold" placeholder="Umbral Bajo Stock" min="0" value="10">
+          <button type="submit" id="submit-product-btn">Agregar Producto</button>
+          <button type="button" id="cancel-product">Cancelar</button>
+        </form>
       </div>
     </div>
 

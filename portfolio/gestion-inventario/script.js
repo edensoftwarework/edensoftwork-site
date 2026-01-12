@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryChartContainer = document.getElementById('category-chart-container');
     const toggleStockChart = document.getElementById('toggle-stock-chart');
     const stockChartContainer = document.getElementById('stock-chart-container');
+    const toggleValueChart = document.getElementById('toggle-value-chart');
+    const valueChartContainer = document.getElementById('value-chart-container');
+    const addProductBtn = document.getElementById('add-product-btn');
+    const productModal = document.getElementById('product-modal');
 
     // Datos
     let products = JSON.parse(localStorage.getItem('inventory-products')) || [];
@@ -35,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentEditId = null;
 
     // Gráficos
-    let categoryChart, stockChart;
+    let categoryChart, stockChart, valueChart;
 
     // Funciones de guardado
     function saveData() {
@@ -49,6 +53,69 @@ document.addEventListener('DOMContentLoaded', () => {
     function showMessage(message) {
         messageText.textContent = message;
         messageModal.style.display = 'block';
+    }
+
+    // Mostrar productos de una categoría
+    function showProductsForCategory(categoryName) {
+        const productsInCat = products.filter(p => {
+            const cat = categories.find(c => c.id === p.category);
+            return cat && cat.name === categoryName;
+        });
+        let html = '<h3>Productos en ' + categoryName + '</h3>';
+        if (productsInCat.length === 0) {
+            html += '<p>No hay productos en esta categoría.</p>';
+        } else {
+            html += '<ul>';
+            productsInCat.forEach(p => {
+                html += '<li>' + p.name + ' (Stock: ' + p.stock + ' ' + p.unit + ')</li>';
+            });
+            html += '</ul>';
+        }
+        document.getElementById('category-products-text').innerHTML = html;
+        document.getElementById('category-products-modal').style.display = 'block';
+    }
+
+    // Mostrar productos de un nivel de stock
+    function showProductsForStockLevel(level) {
+        let filteredProducts;
+        if (level === 'Bajo Stock') {
+            filteredProducts = products.filter(p => p.stock <= p.lowStockThreshold);
+        } else if (level === 'Normal') {
+            filteredProducts = products.filter(p => p.stock > p.lowStockThreshold && p.stock <= p.lowStockThreshold * 2);
+        } else if (level === 'Alto Stock') {
+            filteredProducts = products.filter(p => p.stock > p.lowStockThreshold * 2);
+        }
+        let html = '<h3>Productos con ' + level + '</h3>';
+        if (filteredProducts.length === 0) {
+            html += '<p>No hay productos en este nivel de stock.</p>';
+        } else {
+            html += '<ul>';
+            filteredProducts.forEach(p => {
+                html += '<li>' + p.name + ' (Stock: ' + p.stock + ' ' + p.unit + ')</li>';
+            });
+            html += '</ul>';
+        }
+        document.getElementById('category-products-text').innerHTML = html;
+        document.getElementById('category-products-modal').style.display = 'block';
+    }
+
+    // Mostrar detalles de un producto
+    function showProductDetails(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+        const category = categories.find(c => c.id === product.category)?.name || 'N/A';
+        const supplier = suppliers.find(s => s.id === product.supplier)?.name || 'N/A';
+        const totalValue = (product.stock * product.salePrice).toFixed(2);
+        let html = '<h3>Detalles del Producto</h3>';
+        html += '<p><strong>Nombre:</strong> ' + product.name + '</p>';
+        html += '<p><strong>Descripción:</strong> ' + (product.description || 'N/A') + '</p>';
+        html += '<p><strong>Categoría:</strong> ' + category + '</p>';
+        html += '<p><strong>Proveedor:</strong> ' + supplier + '</p>';
+        html += '<p><strong>Stock:</strong> ' + product.stock + ' ' + product.unit + '</p>';
+        html += '<p><strong>Precio de Venta:</strong> $' + product.salePrice + '</p>';
+        html += '<p><strong>Valor Total en Inventario:</strong> $' + totalValue + '</p>';
+        document.getElementById('category-products-text').innerHTML = html;
+        document.getElementById('category-products-modal').style.display = 'block';
     }
 
     // Actualizar estadísticas
@@ -107,6 +174,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         tooltip: {
                             enabled: false
                         }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const category = categoryLabels[index];
+                            showProductsForCategory(category);
+                        }
+                    },
+                    onHover: function(event, elements) {
+                        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
                     }
                 }
             });
@@ -170,6 +247,66 @@ document.addEventListener('DOMContentLoaded', () => {
                         legend: {
                             display: false
                         }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const stockLevels = ['Bajo Stock', 'Normal', 'Alto Stock'];
+                            const level = stockLevels[index];
+                            showProductsForStockLevel(level);
+                        }
+                    },
+                    onHover: function(event, elements) {
+                        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+                    }
+                }
+            });
+        }
+
+        const sortedProducts = [...products].sort((a, b) => (b.stock * b.salePrice) - (a.stock * a.salePrice));
+        const valueLabels = sortedProducts.map(p => p.name);
+        const valueData = sortedProducts.map(p => p.stock * p.salePrice);
+
+        if (valueChartContainer.style.display !== 'none') {
+            if (valueChart) valueChart.destroy();
+            valueChart = new Chart(document.getElementById('valueChart'), {
+                type: 'pie',
+                data: {
+                    labels: valueLabels,
+                    datasets: [{
+                        data: valueData,
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4fd1c4', '#ed64a6']
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Valor del Inventario por Producto'
+                        },
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const product = sortedProducts[index];
+                            showProductDetails(product.id);
+                        }
+                    },
+                    onHover: function(event, elements) {
+                        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
                     }
                 }
             });
@@ -301,6 +438,19 @@ document.addEventListener('DOMContentLoaded', () => {
         filterProducts();
         renderCharts();
         showMessage('Producto agregado correctamente.');
+        productModal.style.display = 'none';
+        productForm.reset();
+    });
+
+    // Abrir modal agregar producto
+    addProductBtn.addEventListener('click', () => {
+        productModal.style.display = 'block';
+    });
+
+    // Cancelar agregar producto
+    document.getElementById('cancel-product').addEventListener('click', () => {
+        productModal.style.display = 'none';
+        productForm.reset();
     });
 
     // Editar producto
@@ -467,6 +617,8 @@ document.addEventListener('DOMContentLoaded', () => {
             categoryModal.style.display = 'none';
             supplierModal.style.display = 'none';
             movementModal.style.display = 'none';
+            document.getElementById('category-products-modal').style.display = 'none';
+            productModal.style.display = 'none';
         });
     });
     document.querySelector('.message-close').addEventListener('click', () => {
@@ -474,6 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.addEventListener('click', (e) => {
         if (e.target === messageModal) messageModal.style.display = 'none';
+        if (e.target === document.getElementById('category-products-modal')) document.getElementById('category-products-modal').style.display = 'none';
     });
 
     // Evento toggle gráfico de categorías
@@ -493,6 +646,29 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleStockChart.textContent = isVisible ? 'Ver Gráfico de Niveles de Stock' : 'Ocultar Gráfico de Niveles de Stock';
         if (!isVisible) {
             renderCharts(); // Renderizar solo cuando se muestra
+        }
+    });
+
+    // Evento toggle gráfico de valor por producto
+    toggleValueChart.addEventListener('click', () => {
+        const isVisible = valueChartContainer.style.display !== 'none';
+        valueChartContainer.style.display = isVisible ? 'none' : 'block';
+        toggleValueChart.textContent = isVisible ? 'Ver Gráfico de Valor por Producto' : 'Ocultar Gráfico de Valor por Producto';
+        if (!isVisible) {
+            renderCharts(); // Renderizar solo cuando se muestra
+        }
+    });
+
+    // Cerrar modales con tecla Escape
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            editModal.style.display = 'none';
+            categoryModal.style.display = 'none';
+            supplierModal.style.display = 'none';
+            movementModal.style.display = 'none';
+            messageModal.style.display = 'none';
+            document.getElementById('category-products-modal').style.display = 'none';
+            productModal.style.display = 'none';
         }
     });
 
