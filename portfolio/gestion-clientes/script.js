@@ -65,6 +65,7 @@ document.getElementById('add-client-btn').addEventListener('click', () => {
   modalTitle.textContent = 'Agregar Cliente';
   form.reset();
   notesHistory.style.display = 'none';
+  document.getElementById('submit-client-btn').textContent = 'Guardar Cliente';
   modal.style.display = 'block';
 });
 
@@ -101,12 +102,17 @@ document.getElementById('history-filter-date').addEventListener('change', functi
   const clientName = document.getElementById('history-title').textContent.replace('Historial de ', '');
   const client = clients.find(c => c.name === clientName);
   if (!client || !client.notes) return;
-  currentClientNotes = client.notes;
+  
   if (selectedDate) {
     currentClientNotes = client.notes.filter(note => {
-      const noteDate = new Date(note.date).toISOString().split('T')[0];
-      return noteDate === selectedDate;
+      // Extraer fecha de la nota (formato: "dd/mm/yyyy, hh:mm:ss")
+      const noteDateStr = note.date.split(',')[0]; // "dd/mm/yyyy"
+      const [day, month, year] = noteDateStr.split('/');
+      const noteDateFormatted = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      return noteDateFormatted === selectedDate;
     });
+  } else {
+    currentClientNotes = client.notes;
   }
   displayHistory(currentClientNotes, currentSort);
 });
@@ -137,6 +143,7 @@ function editClient(id) {
   document.getElementById('client-email').value = client.email || '';
   document.getElementById('client-note').value = '';
   document.getElementById('note-priority').checked = false;
+  document.getElementById('submit-client-btn').textContent = 'Actualizar Cliente';
   // Mostrar historial
   notesList.innerHTML = '';
   if (client.notes && client.notes.length > 0) {
@@ -174,13 +181,20 @@ function displayHistory(notes, sortOrder = 'desc') {
   const historyList = document.getElementById('history-list');
   historyList.innerHTML = '';
   if (notes.length > 0) {
-    // Ordenar según sortOrder
-    notes.sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+    // Crear una copia para no mutar el original
+    const sortedNotes = [...notes].sort((a, b) => {
+      // Parsear fecha manualmente (formato: "dd/mm/yyyy, hh:mm:ss")
+      const [dateStrA] = a.date.split(', ');
+      const [dayA, monthA, yearA] = dateStrA.split('/').map(Number);
+      const dateA = new Date(yearA, monthA - 1, dayA);
+      
+      const [dateStrB] = b.date.split(', ');
+      const [dayB, monthB, yearB] = dateStrB.split('/').map(Number);
+      const dateB = new Date(yearB, monthB - 1, dayB);
+      
       return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
     });
-    notes.forEach(note => {
+    sortedNotes.forEach(note => {
       const li = document.createElement('li');
       li.textContent = `${note.date}: ${note.text}`;
       if (note.priority) li.style.fontWeight = 'bold';
@@ -212,6 +226,13 @@ form.addEventListener('submit', (e) => {
 
   if (!name) {
     showMessage('El nombre es obligatorio.');
+    return;
+  }
+
+  // Verificar si ya existe un cliente con el mismo nombre (ignorando mayúsculas/minúsculas)
+  const existingClient = clients.find(c => c.name.toLowerCase() === name.toLowerCase() && c.id !== editingClientId);
+  if (existingClient) {
+    showMessage('Ya existe un cliente con ese nombre.');
     return;
   }
 
