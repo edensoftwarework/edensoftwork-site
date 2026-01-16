@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Presupuestos y Cotizaciones - EDEN SoftWork</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Sistema de Gestión de Presupuestos y Cotizaciones</h1>
+    <p>Sistema para crear, gestionar y enviar presupuestos de manera profesional. Ideal para pequeños negocios y freelancers.</p>
+
+    <!-- Sección de Gestión -->
+    <div class="management-section">
+      <h3>Herramientas de Gestión</h3>
+      <div class="management-buttons">
+        <button id="add-budget-btn">Agregar Presupuesto</button>
+      </div>
+    </div>
+
+    <!-- Sección de Presupuestos -->
+    <div class="budgets-section">
+      <h3>Listado de Presupuestos</h3>
+
+      <!-- Filtros -->
+      <div class="filters">
+        <input type="text" id="search" placeholder="Buscar por cliente">
+        <select id="filter-status">
+          <option value="">Todos los Estados</option>
+          <option value="borrador">Borrador</option>
+          <option value="enviado">Enviado</option>
+          <option value="aceptado">Aceptado</option>
+          <option value="rechazado">Rechazado</option>
+        </select>
+        <button id="clear-filters">Limpiar Filtros</button>
+      </div>
+
+      <hr style="border: none; height: 2px; background: #ccc; margin: 30px 0;">
+
+      <!-- Tabla de Presupuestos -->
+      <div class="budgets-table">
+        <table id="budgets-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="budgets-tbody">
+            <!-- Presupuestos se agregarán aquí -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modales -->
+    <div id="budget-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="budget-close">&times;</span>
+        <h3 id="budget-modal-title">Agregar Presupuesto</h3>
+        <form id="budget-form">
+          <input type="text" id="budget-client" placeholder="Cliente" required>
+          <input type="date" id="budget-date" required>
+          <div id="items-container">
+            <div class="item">
+              <input type="text" placeholder="Descripción" class="item-desc" required>
+              <input type="number" placeholder="Precio" step="0.01" min="0" class="item-price" required>
+              <input type="number" placeholder="Cantidad" min="1" class="item-qty" value="1" required>
+              <button type="button" class="remove-item">Eliminar</button>
+            </div>
+          </div>
+          <button type="button" id="add-item-btn">Agregar Ítem</button>
+          <p>Total: $<span id="budget-total">0.00</span></p>
+          <select id="budget-status" required>
+            <option value="borrador">Borrador</option>
+            <option value="enviado">Enviado</option>
+            <option value="aceptado">Aceptado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+          <button type="submit" id="submit-budget-btn">Guardar Presupuesto</button>
+          <button type="button" id="cancel-budget">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="message-modal" class="message-modal">
+      <div class="message-content">
+        <span class="message-close">&times;</span>
+        <p id="message-text"></p>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 30px;"><a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
