@@ -82,6 +82,14 @@ th {
   color: #667eea;
   font-weight: 500;
 }
+.acciones-header {
+  text-align: center;
+}
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
 tr:hover {
   background: #f8f9fa;
 }
@@ -110,13 +118,13 @@ button:hover {
 }
 .modal-content {
   background-color: white;
-  margin: 5% auto;
+  margin: 2% auto;
   padding: 30px;
   border-radius: 15px;
-  width: 90%;
-  max-width: 700px;
+  width: 95%;
+  max-width: 1000px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
 }
 .close {
@@ -134,7 +142,8 @@ button:hover {
   margin-bottom: 20px;
 }
 form {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 15px;
 }
 input, select {

@@ -14,7 +14,7 @@ function loadBudgets() {
       <td>${budget.date}</td>
       <td>$${budget.total.toFixed(2)}</td>
       <td>${budget.status}</td>
-      <td>
+      <td class="actions-cell">
         <button onclick="editBudget(${budget.id})">Editar</button>
         <button onclick="deleteBudget(${budget.id})" style="background: #dc3545;">Eliminar</button>
         <button onclick="exportPDF(${budget.id})">PDF</button>

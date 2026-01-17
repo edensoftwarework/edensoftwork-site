@@ -50,7 +50,7 @@
               <th>Fecha</th>
               <th>Total</th>
               <th>Estado</th>
-              <th>Acciones</th>
+              <th class="acciones-header">Acciones</th>
             </tr>
           </thead>
           <tbody id="budgets-tbody">
@@ -76,7 +76,9 @@
               <button type="button" class="remove-item">Eliminar</button>
             </div>
           </div>
-          <button type="button" id="add-item-btn">Agregar Ítem</button>
+          <div style="display: flex; justify-content: center;">
+            <button type="button" id="add-item-btn">Agregar Ítem</button>
+          </div>
           <p>Total: $<span id="budget-total">0.00</span></p>
           <select id="budget-status" required>
             <option value="borrador">Borrador</option>
@@ -84,8 +86,10 @@
             <option value="aceptado">Aceptado</option>
             <option value="rechazado">Rechazado</option>
           </select>
-          <button type="submit" id="submit-budget-btn">Guardar Presupuesto</button>
-          <button type="button" id="cancel-budget">Cancelar</button>
+          <div style="display: flex; justify-content: center; gap: 15px;">
+            <button type="submit" id="submit-budget-btn">Guardar Presupuesto</button>
+            <button type="button" id="cancel-budget">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>
