@@ -123,6 +123,13 @@
         });
       });
     });
+
+    // Simulate form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Mensaje enviado exitosamente. Gracias por contactarnos.');
+      this.reset();
+    });
   </script>
 </body>
 </html>
