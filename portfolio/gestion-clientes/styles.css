@@ -82,6 +82,14 @@ th {
   color: #667eea;
   font-weight: 500;
 }
+.acciones-header {
+  text-align: center;
+}
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
 tr:hover {
   background: #f8f9fa;
 }
@@ -136,6 +144,11 @@ button:hover {
 form {
   display: grid;
   gap: 15px;
+}
+.modal-content button {
+  width: auto;
+  margin: 0 auto;
+  display: block;
 }
 input, textarea {
   padding: 12px;

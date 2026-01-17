@@ -16,7 +16,7 @@ function loadClients() {
       <td>${client.phone || '-'}</td>
       <td>${client.email || '-'}</td>
       <td><a href="#" onclick="viewHistory(${client.id}); return false;" style="color: #667eea; text-decoration: underline;">Ver</a></td>
-      <td>
+      <td class="actions-cell">
         <button onclick="editClient(${client.id})">Editar</button>
         <button onclick="deleteClient(${client.id})" style="background: #dc3545;">Eliminar</button>
       </td>
