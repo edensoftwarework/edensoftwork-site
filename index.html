@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/lib/index.js"></script>
 </head>
 <body>
   <header>
@@ -101,10 +100,11 @@
   <section id="contacto" class="contact">
     <h2>Contáctanos</h2>
     <p>¿Listo para llevar tu negocio al siguiente nivel? Envíanos un mensaje y hablemos de tu proyecto.</p>
-    <form id="contact-form" action="#" method="post">
-      <input type="text" id="name" name="name" placeholder="Tu Nombre" required>
-      <input type="email" id="email" name="email" placeholder="Tu Email" required>
-      <textarea id="message" name="message" rows="5" placeholder="Describe tu proyecto" required></textarea>
+    <form action="https://formspree.io/f/mbddgbwk" method="POST">
+      <input type="text" name="name" placeholder="Tu Nombre" required>
+      <input type="email" name="email" placeholder="Tu Email" required>
+      <textarea name="message" rows="5" placeholder="Describe tu proyecto" required></textarea>
+      <input type="hidden" name="_next" value="https://edensoftwork.com" />
       <button type="submit">Enviar Mensaje</button>
     </form>
   </section>
@@ -122,27 +122,6 @@
         target.scrollIntoView({
           behavior: 'smooth'
         });
-      });
-    });
-
-    // EmailJS integration for contact form
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      emailjs.init("k-0SenEhmTSSpFFEk");
-      
-      // Email a ti (Contact us)
-      emailjs.send("service_6rlnwpc", "template_cpr4uk3", {
-        from_name: document.getElementById('name').value,
-        from_email: document.getElementById('email').value,
-        message: document.getElementById('message').value
-      })
-      .then(function() {
-        alert('Mensaje enviado exitosamente. Gracias por contactarnos.');
-        document.getElementById('contact-form').reset();
-      }, function(error) {
-        alert('Error al enviar el mensaje. Inténtalo de nuevo.');
-        console.log('Error:', error);
       });
     });
   </script>
