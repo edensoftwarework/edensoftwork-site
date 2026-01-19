@@ -55,7 +55,7 @@ nav a:hover {
 
 /* Hero */
 .hero {
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://via.placeholder.com/1200x600/8B4513/FFFFFF?text=Panaderia+Deliciosa') center/cover;
+  position: relative;
   color: white;
   text-align: center;
   padding: 150px 20px 100px;
@@ -63,6 +63,38 @@ nav a:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.hero-bg.active {
+  opacity: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .hero h1 {
@@ -108,51 +140,68 @@ nav a:hover {
 }
 
 .category {
-  margin-bottom: 60px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.category h3 {
+.accordion-header {
+  background: #8B4513;
+  color: white;
+  padding: 15px;
+  cursor: pointer;
   font-size: 1.5rem;
-  color: #8B4513;
-  margin-bottom: 20px;
   text-align: center;
+  transition: background 0.3s;
+}
+
+.accordion-header:hover {
+  background: #A0522D;
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+  background: rgba(255,255,255,0.95);
+}
+
+.category.open .accordion-content {
+  max-height: 2000px;
 }
 
 .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
 }
 
 .product-item {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.product-item img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 5px;
-  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
 }
 
 .product-item h4 {
+  flex: 1;
   color: #8B4513;
-  margin-bottom: 10px;
+  font-size: 1.1rem;
 }
 
 .product-item p {
-  margin-bottom: 10px;
+  flex: 2;
+  font-size: 0.9rem;
+  color: #555;
 }
 
 .product-item .price {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
-  color: #FFD700;
+  color: black;
 }
 
 /* Contact */
@@ -178,6 +227,47 @@ footer {
   color: white;
   text-align: center;
   padding: 20px;
+}
+
+/* Background images for categories */
+.category:nth-of-type(1) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Panes.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(2) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Croissants.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(3) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Tortas.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(4) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Tartas.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(5) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Galletas.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(6) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Sandwiches.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(7) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Café con Galletas.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
+}
+
+.category:nth-of-type(8) .accordion-content {
+  background: rgba(255,255,255,0.9) url('imagenes/Te con Galletas.jpg') no-repeat center/cover;
+  background-blend-mode: overlay;
 }
 
 /* Responsive */
