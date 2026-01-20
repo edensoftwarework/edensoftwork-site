@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Análisis Empresarial - EDEN SoftWork</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Dashboard de Análisis Empresarial</h1>
+        <p>Herramienta para visualizar métricas clave de rendimiento en tiempo real.</p>
+    </header>
+
+    <main>
+        <section class="metrics">
+            <div class="metric-card">
+                <h3>Ingresos Totales</h3>
+                <p class="metric-value">$45,230</p>
+                <p class="metric-change positive">+12% vs mes anterior</p>
+            </div>
+            <div class="metric-card">
+                <h3>Clientes Nuevos</h3>
+                <p class="metric-value">127</p>
+                <p class="metric-change positive">+8% vs mes anterior</p>
+            </div>
+            <div class="metric-card">
+                <h3>Pedidos Procesados</h3>
+                <p class="metric-value">892</p>
+                <p class="metric-change negative">-3% vs mes anterior</p>
+            </div>
+            <div class="metric-card">
+                <h3>Satisfacción del Cliente</h3>
+                <p class="metric-value">94%</p>
+                <p class="metric-change positive">+2% vs mes anterior</p>
+            </div>
+        </section>
+
+        <section class="charts">
+            <div class="chart-container">
+                <h3>Ventas Mensuales</h3>
+                <canvas id="salesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Distribución por Categoría</h3>
+                <canvas id="categoryChart" width="400" height="200"></canvas>
+            </div>
+        </section>
+
+        <section class="data-table">
+            <h3>Últimos Pedidos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#00123</td>
+                        <td>María González</td>
+                        <td>Producto A</td>
+                        <td>$150</td>
+                        <td>Completado</td>
+                    </tr>
+                    <tr>
+                        <td>#00124</td>
+                        <td>Juan Pérez</td>
+                        <td>Producto B</td>
+                        <td>$200</td>
+                        <td>En proceso</td>
+                    </tr>
+                    <tr>
+                        <td>#00125</td>
+                        <td>Ana López</td>
+                        <td>Producto C</td>
+                        <td>$75</td>
+                        <td>Pendiente</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Desarrollado por EDEN SoftWork | <a href="../index.html">Volver al Portfolio</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ body {
   color: #333;
   background: linear-gradient(135deg, #f4f4f4 0%, #e9ecef 100%);
   background-attachment: fixed;
+  overflow-x: hidden;
 }
 header {
   background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
@@ -162,10 +163,11 @@ section {
   text-align: center;
   background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('Images/about-bg.jpg') center/cover no-repeat;
   padding: 60px 20px;
-  border-radius: 20px;
+  border-radius: 0;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  margin: 80px auto;
-  max-width: 1200px;
+  margin: 80px 0;
+  width: 100vw;
+  max-width: none;
   border: 1px solid #e9ecef;
 }
 .portfolio {
@@ -180,7 +182,7 @@ section {
 }
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   margin-top: 30px;
 }
@@ -356,8 +358,10 @@ section {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 20px;
   margin-top: 40px;
-  padding: 0 20px;
+  padding: 20px 20px 0 20px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
 }
 
 .portfolio-item h3, .portfolio-item p {
@@ -371,8 +375,8 @@ section {
 }
 
 .portfolio-item {
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-  padding: 20px;
+  background: linear-gradient(145deg, #e3f2fd 0%, #f8f9fa 100%);
+  padding: 15px;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   border: 1px solid #e9ecef;
