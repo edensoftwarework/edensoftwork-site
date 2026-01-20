@@ -39,6 +39,34 @@ nav ul {
 nav ul li {
   margin-left: 30px;
 }
+.dropdown {
+  position: relative;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  min-width: 150px;
+}
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+.dropdown-menu li {
+  margin: 0;
+}
+.dropdown-menu li a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+.dropdown-menu li a:hover {
+  background: #f8f9fa;
+}
 nav ul li a {
   color: white;
   text-decoration: none;
@@ -49,11 +77,15 @@ nav ul li a:hover {
   color: #cce7ff;
 }
 .hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%), url('Images/hero-bg.jpg') center/cover no-repeat;
   color: white;
-  padding: 120px 20px 80px;
+  padding: 250px 0 150px;
   text-align: center;
   position: relative;
+  max-width: none;
+  margin: 0;
+  width: 100vw;
+  border-radius: 0 0 20px 20px;
 }
 .hero::before {
   content: '';
@@ -72,13 +104,17 @@ nav ul li a:hover {
 .hero h1 {
   font-size: 3rem;
   margin-bottom: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
 }
 .hero p {
   font-size: 1.2rem;
   margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 .btn {
-  background-color: #28a745;
+  background-color: #667eea;
   color: white;
   padding: 12px 30px;
   text-decoration: none;
@@ -86,8 +122,9 @@ nav ul li a:hover {
   font-weight: 500;
   transition: background-color 0.3s;
 }
-.btn:hover {
-  background-color: #218838;
+.btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
 }
 section {
   max-width: 1200px;
@@ -123,7 +160,7 @@ section {
 }
 .about {
   text-align: center;
-  background: white;
+  background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('Images/about-bg.jpg') center/cover no-repeat;
   padding: 60px 20px;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -147,13 +184,6 @@ section {
   gap: 30px;
   margin-top: 30px;
 }
-.portfolio-item {
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
 .portfolio-item:hover {
   transform: translateY(-5px);
 }
@@ -163,6 +193,14 @@ section {
 }
 .portfolio-item p {
   margin-bottom: 20px;
+}
+.portfolio-icon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 .contact {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -186,7 +224,7 @@ section {
   font-family: 'Roboto', sans-serif;
 }
 .contact button {
-  background-color: #28a745;
+  background-color: #667eea;
   color: white;
   padding: 12px 30px;
   border: none;
@@ -196,7 +234,11 @@ section {
   transition: background-color 0.3s;
 }
 .contact button:hover {
-  background-color: #218838;
+  background-color: #5a67d8;
+}
+.contact button:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
 }
 footer {
   background: linear-gradient(90deg, #343a40 0%, #495057 100%);
@@ -286,4 +328,73 @@ section {
   footer p {
     font-size: 0.9rem;
   }
+}
+
+/* Portfolio toggle and section */
+.portfolio-toggle {
+  font-size: 1.1em;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.portfolio-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.portfolio-section {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.5s ease;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 20px;
+  margin-top: 40px;
+  padding: 0 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.portfolio-item h3, .portfolio-item p {
+  text-align: center;
+}
+
+.portfolio-item .btn {
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+}
+
+.portfolio-item {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.portfolio-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.link-text {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  text-align: center;
+  display: block;
+}
+
+.link-text:hover {
+  color: #764ba2;
+  text-decoration: underline;
 }

@@ -15,7 +15,12 @@
       <div class="logo">EDEN SoftWork</div>
       <ul>
         <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#servicios">Servicios</a></li>
+        <li class="dropdown">
+          <a href="#servicios">Servicios</a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="nav-proyectos">Proyectos</a></li>
+          </ul>
+        </li>
         <li><a href="#acerca">Acerca de</a></li>
         <li><a href="#contacto">Contacto</a></li>
       </ul>
@@ -34,79 +39,89 @@
       <div class="service-card">
         <svg class="service-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>Desarrollo de Software a Medida</h3>
-        <p>Desarrollo de herramientas personalizadas para automatizar procesos y mejorar la eficiencia en tu empresa.</p>
+        <p>Desarrollo de herramientas personalizadas para automatizar procesos y mejorar la eficiencia en tu empresa. Ahorra tiempo y reduce errores con soluciones adaptadas a tus necesidades específicas.</p>
       </div>
       <div class="service-card">
         <svg class="service-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>Aplicaciones Móviles y Web</h3>
-        <p>Aplicaciones móviles y web simples pero poderosas, diseñadas para resolver necesidades específicas.</p>
+        <p>Aplicaciones móviles y web simples pero poderosas, diseñadas para resolver necesidades específicas. Accede a tus datos desde cualquier lugar con interfaces intuitivas y seguras.</p>
       </div>
       <div class="service-card">
         <svg class="service-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>Planillas y Dashboards</h3>
-        <p>Creación de planillas avanzadas y dashboards interactivos para análisis de datos y reportes.</p>
+        <p>Creación de planillas avanzadas y dashboards interactivos para análisis de datos y reportes. Toma decisiones informadas con visualizaciones claras y automatizadas.</p>
       </div>
       <div class="service-card">
         <svg class="service-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>Sitios Web</h3>
-        <p>Diseño y desarrollo de sitios web profesionales, responsivos y optimizados para SEO.</p>
+        <p>Diseño y desarrollo de sitios web profesionales, responsivos y optimizados para SEO. Atrae más visitantes y convierte leads con presencia online efectiva.</p>
       </div>
       <div class="service-card">
         <svg class="service-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>Integración de APIs</h3>
-        <p>Conexión de sistemas y automatización mediante APIs para una mayor integración digital.</p>
+        <p>Conexión de sistemas y automatización mediante APIs para una mayor integración digital. Simplifica flujos de trabajo y conecta tus herramientas favoritas sin complicaciones.</p>
       </div>
       <div class="service-card">
         <svg class="service-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>Mantenimiento y Soporte</h3>
-        <p>Servicio continuo de mantenimiento, actualizaciones y soporte técnico para tus soluciones.</p>
+        <p>Servicio continuo de mantenimiento, actualizaciones y soporte técnico para tus soluciones. Mantén tu software actualizado y funcionando sin interrupciones.</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 60px;">
+      <button id="togglePortfolio" class="btn portfolio-toggle">Descubre Nuestros Proyectos Realizados</button>
+    </div>
+
+    <div id="portfolioSection" class="portfolio-section">
+      <h2 style="text-align: center; margin-bottom: 20px; color: #667eea;">Portfolio de Proyectos</h2>
+      <p style="text-align: center; margin-bottom: 40px; font-size: 1.1em; color: #555;">Explora ejemplos de soluciones que hemos desarrollado para diversos clientes.</p>
+      <div class="portfolio-grid">
+        <div class="portfolio-item" data-href="portfolio/gestion-turnos/index.html">
+          <svg class="portfolio-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Sistema de Gestión de Turnos</h3>
+          <p>Herramienta web para reservas de turnos, adaptable a peluquerías, clínicas y negocios similares.</p>
+          <a href="portfolio/gestion-turnos/index.html" class="link-text">Ver Proyecto</a>
+        </div>
+        <div class="portfolio-item" data-href="portfolio/gestion-inventario/index.html">
+          <svg class="portfolio-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Sistema de Gestión de Inventario</h3>
+          <p>Herramienta web para control de stock, productos y proveedores en pequeños negocios.</p>
+          <a href="portfolio/gestion-inventario/index.html" class="link-text">Ver Proyecto</a>
+        </div>
+        <div class="portfolio-item" data-href="portfolio/gestion-clientes/index.html">
+          <svg class="portfolio-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Sistema de Gestión de Clientes</h3>
+          <p>Herramienta web para registrar, organizar y consultar clientes de forma rápida, pensada para pequeños negocios y profesionales independientes.</p>
+          <a href="portfolio/gestion-clientes/index.html" class="link-text">Ver Proyecto</a>
+        </div>
+        <div class="portfolio-item" data-href="portfolio/gestion-presupuestos/index.html">
+          <svg class="portfolio-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Sistema de Gestión de Presupuestos y Cotizaciones</h3>
+          <p>Herramienta web para crear, gestionar y enviar presupuestos de manera profesional, ideal para pequeños negocios y freelancers.</p>
+          <a href="portfolio/gestion-presupuestos/index.html" class="link-text">Ver Proyecto</a>
+        </div>
+        <div class="portfolio-item" data-href="portfolio/landing-page-ejemplo/index.html">
+          <svg class="portfolio-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Landing Page - Panadería Deliciosa</h3>
+          <p>Página web atractiva y sencilla que muestra los productos de una panadería para atraer y convencer a los clientes potenciales.</p>
+          <a href="portfolio/landing-page-ejemplo/index.html" class="link-text">Ver Proyecto</a>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="acerca" class="about">
     <h2>Acerca de EDEN SoftWork</h2>
-    <p>Somos un emprendimiento dedicado a ofrecer soluciones de software accesibles y de alta calidad. Con experiencia en desarrollo personalizado, ayudamos a pequeñas empresas e individuos a digitalizar sus procesos y alcanzar sus objetivos tecnológicos. Nuestro enfoque es combinar innovación con practicidad, utilizando las últimas tecnologías para crear productos que realmente marquen la diferencia.</p>
-  </section>
-
-  <section id="portfolio" class="portfolio">
-    <h2>Portfolio</h2>
-    <p>Explora nuestros proyectos desarrollados. Cada uno demuestra soluciones prácticas y personalizadas.</p>
-    <div class="portfolio-grid">
-      <div class="portfolio-item">
-        <h3>Sistema de Gestión de Turnos</h3>
-        <p>Herramienta web para reservas de turnos, adaptable a peluquerías, clínicas y negocios similares.</p>
-        <a href="portfolio/gestion-turnos/index.html" class="btn">Ver Proyecto</a>
-      </div>
-      <div class="portfolio-item">
-        <h3>Sistema de Gestión de Inventario</h3>
-        <p>Herramienta web para control de stock, productos y proveedores en pequeños negocios.</p>
-        <a href="portfolio/gestion-inventario/index.html" class="btn">Ver Proyecto</a>
-      </div>
-      <div class="portfolio-item">
-        <h3>Sistema de Gestión de Clientes</h3>
-        <p>Herramienta web para registrar, organizar y consultar clientes de forma rápida, pensada para pequeños negocios y profesionales independientes.</p>
-        <a href="portfolio/gestion-clientes/index.html" class="btn">Ver Proyecto</a>
-      </div>
-      <div class="portfolio-item">
-        <h3>Sistema de Gestión de Presupuestos y Cotizaciones</h3>
-        <p>Herramienta web para crear, gestionar y enviar presupuestos de manera profesional, ideal para pequeños negocios y freelancers.</p>
-        <a href="portfolio/gestion-presupuestos/index.html" class="btn">Ver Proyecto</a>
-      </div>
-      <div class="portfolio-item">
-        <h3>Landing Page - Panadería Deliciosa</h3>
-        <p>Página web atractiva y sencilla que muestra los productos de una panadería para atraer y convencer a los clientes potenciales.</p>
-        <a href="portfolio/landing-page-ejemplo/index.html" class="btn">Ver Proyecto</a>
-      </div>
-    </div>
+    <p style="text-align: justify; max-width: 800px; margin: 0 auto 20px;">Somos un emprendimiento dedicado a ofrecer soluciones de software accesibles y de alta calidad. Con experiencia en desarrollo personalizado, ayudamos a pequeñas empresas e individuos a digitalizar sus procesos y alcanzar sus objetivos tecnológicos. Nuestro enfoque combina innovación con practicidad, utilizando las últimas tecnologías para crear productos que realmente marquen la diferencia.</p>
+    <p style="text-align: justify; max-width: 800px; margin: 0 auto;"><strong>Proceso de Trabajo:</strong> Seguimos un enfoque claro y eficiente: Consulta inicial para entender tus necesidades, Desarrollo personalizado con las últimas tecnologías, y Entrega con soporte continuo para asegurar el éxito de tu proyecto.</p>
   </section>
 
   <section id="contacto" class="contact">
     <h2>Contáctanos</h2>
     <p>¿Listo para llevar tu negocio al siguiente nivel? Envíanos un mensaje y hablemos de tu proyecto.</p>
-    <form action="https://formspree.io/f/mbddgbwk" method="POST">
+    <form action="https://formspree.io/f/mbddgbwk" method="POST" id="contactForm">
       <input type="text" name="name" placeholder="Tu Nombre" required>
-      <input type="email" name="email" placeholder="Tu Email" required>
+      <input type="email" name="email" placeholder="Tu Email" required id="email">
       <textarea name="message" rows="5" placeholder="Describe tu proyecto" required></textarea>
       <input type="hidden" name="_next" value="https://edensoftwork.com" />
       <button type="submit">Enviar Mensaje</button>
@@ -115,17 +130,122 @@
 
   <footer>
     <p>&copy; 2026 EDEN SoftWork</p>
+    <p><a href="#inicio" style="color: #667eea; text-decoration: none;">Volver arriba</a></p>
   </footer>
 
+  <div id="feedbackBtn" style="position: fixed; bottom: 20px; right: 20px; background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">Enviar Feedback</div>
+
   <script>
+    // Custom smooth scroll function
+    function smoothScrollTo(target, duration = 2000) {
+      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+      const startPosition = window.pageYOffset;
+      const distance = targetPosition - startPosition;
+      let startTime = null;
+
+      function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const run = ease(timeElapsed, startPosition, distance, duration);
+        window.scrollTo(0, run);
+        if (timeElapsed < duration) requestAnimationFrame(animation);
+      }
+
+      function ease(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+      }
+
+      requestAnimationFrame(animation);
+    }
+
     // Smooth scrolling for navigation links
     document.querySelectorAll('nav a').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
-        target.scrollIntoView({
-          behavior: 'smooth'
-        });
+        smoothScrollTo(target, 1000);
+      });
+    });
+
+    // Parallax effect for hero
+    window.addEventListener('scroll', function() {
+      const hero = document.querySelector('.hero');
+      const scrolled = window.pageYOffset;
+      hero.style.backgroundPositionY = -(scrolled * 0.5) + 'px';
+    });
+
+    // Form validation
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      const email = document.getElementById('email').value;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Por favor, ingresa un email válido.');
+        e.preventDefault();
+      }
+    });
+
+    // Feedback button
+    document.getElementById('feedbackBtn').addEventListener('click', () => {
+      const target = document.querySelector('#contacto');
+      smoothScrollTo(target, 1000);
+    });
+
+    // Toggle portfolio section with smooth animation
+    document.getElementById('togglePortfolio').addEventListener('click', function() {
+      const portfolioSection = document.getElementById('portfolioSection');
+      if (portfolioSection.style.maxHeight) {
+        portfolioSection.style.maxHeight = null;
+        portfolioSection.style.opacity = '0';
+        this.textContent = 'Descubre Nuestros Proyectos Realizados';
+      } else {
+        portfolioSection.style.maxHeight = portfolioSection.scrollHeight + 'px';
+        portfolioSection.style.opacity = '1';
+        this.textContent = 'Ocultar Proyectos';
+      }
+    });
+
+    // Handle nav proyectos click
+    document.getElementById('nav-proyectos').addEventListener('click', function(e) {
+      e.preventDefault();
+      // Scroll to servicios
+      const serviciosTarget = document.querySelector('#servicios');
+      smoothScrollTo(serviciosTarget, 1000);
+      // Toggle portfolio if not visible
+      const portfolioSection = document.getElementById('portfolioSection');
+      if (!portfolioSection.style.maxHeight || portfolioSection.style.maxHeight === '0px') {
+        portfolioSection.style.maxHeight = portfolioSection.scrollHeight + 'px';
+        portfolioSection.style.opacity = '1';
+        document.getElementById('togglePortfolio').textContent = 'Ocultar Proyectos';
+        // Scroll to portfolio after animation
+        setTimeout(() => {
+          const portfolioTarget = document.getElementById('portfolioSection');
+          smoothScrollTo(portfolioTarget, 1000);
+        }, 600); // Adjust delay to match transition
+      }
+    });
+
+    // Make portfolio items clickable
+    document.querySelectorAll('.portfolio-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const href = this.getAttribute('data-href');
+        if (href) {
+          window.open(href, '_blank');
+        }
+      });
+    });
+
+    // Handle link-text clicks to prevent navigation and open in new tab
+    document.querySelectorAll('.link-text').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const href = this.getAttribute('href');
+        if (href) {
+          window.open(href, '_blank');
+        }
       });
     });
   </script>
