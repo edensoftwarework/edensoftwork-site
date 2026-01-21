@@ -3,92 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Análisis Empresarial - EDEN SoftWork</title>
+    <title>Dashboard de Análisis - Panadería La Deliciosa - EDEN SoftWork</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Dashboard de Análisis Empresarial</h1>
-        <p>Herramienta para visualizar métricas clave de rendimiento en tiempo real.</p>
+        <h1>Dashboard de Análisis - Panadería La Deliciosa</h1>
+        <p>Herramienta para monitorear el rendimiento de ventas, inventario y satisfacción del cliente en tiempo real.</p>
     </header>
 
+    <!-- Modal para detalles de orden -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalles del Pedido</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Los detalles se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
     <main>
+        <section class="filters">
+            <label for="period">Período:</label>
+            <select id="period">
+                <option value="month">Último Mes</option>
+                <option value="quarter">Último Trimestre</option>
+                <option value="year">Último Año</option>
+            </select>
+            <button id="exportBtn">Exportar Datos</button>
+        </section>
+
         <section class="metrics">
             <div class="metric-card">
-                <h3>Ingresos Totales</h3>
-                <p class="metric-value">$45,230</p>
-                <p class="metric-change positive">+12% vs mes anterior</p>
+                <h3>Ventas Totales</h3>
+                <p class="metric-value">$12,450</p>
+                <p class="metric-change positive">+15% vs mes anterior</p>
             </div>
             <div class="metric-card">
-                <h3>Clientes Nuevos</h3>
-                <p class="metric-value">127</p>
-                <p class="metric-change positive">+8% vs mes anterior</p>
+                <h3>Clientes Diarios</h3>
+                <p class="metric-value">87</p>
+                <p class="metric-change positive">+22% vs mes anterior</p>
             </div>
             <div class="metric-card">
-                <h3>Pedidos Procesados</h3>
-                <p class="metric-value">892</p>
-                <p class="metric-change negative">-3% vs mes anterior</p>
+                <h3>Productos Vendidos</h3>
+                <p class="metric-value">1,234</p>
+                <p class="metric-change negative">-5% vs mes anterior</p>
             </div>
             <div class="metric-card">
                 <h3>Satisfacción del Cliente</h3>
-                <p class="metric-value">94%</p>
-                <p class="metric-change positive">+2% vs mes anterior</p>
+                <p class="metric-value">96%</p>
+                <p class="metric-change positive">+3% vs mes anterior</p>
+            </div>
+            <div class="metric-card">
+                <h3>Inventario Bajo</h3>
+                <p class="metric-value">3 productos</p>
+                <p class="metric-change warning">Requiere atención</p>
+            </div>
+            <div class="metric-card">
+                <h3>Margen de Ganancia</h3>
+                <p class="metric-value">42%</p>
+                <p class="metric-change positive">+8% vs mes anterior</p>
+            </div>
+            <div class="metric-card">
+                <h3>Pedidos Pendientes</h3>
+                <p class="metric-value">12 pedidos</p>
+                <p class="metric-change neutral">En proceso</p>
+            </div>
+            <div class="metric-card">
+                <h3>Tiempo Promedio de Entrega</h3>
+                <p class="metric-value">18 min</p>
+                <p class="metric-change positive">-5 min vs mes anterior</p>
             </div>
         </section>
 
         <section class="charts">
-            <div class="chart-container">
-                <h3>Ventas Mensuales</h3>
-                <canvas id="salesChart" width="400" height="200"></canvas>
+            <div class="chart-container large">
+                <h3>Ventas Mensuales por Producto</h3>
+                <canvas id="salesChart" width="600" height="300"></canvas>
             </div>
-            <div class="chart-container">
-                <h3>Distribución por Categoría</h3>
-                <canvas id="categoryChart" width="400" height="200"></canvas>
+            <div class="chart-container large">
+                <h3>Distribución de Ventas por Categoría</h3>
+                <canvas id="categoryChart" width="600" height="300"></canvas>
             </div>
+        </section>
+
+        <section class="alerts">
+            <h3>Alertas y Notificaciones</h3>
+            <ul>
+                <li>⚠️ <strong>Stock Bajo:</strong> Croissants - Solo 5 unidades restantes</li>
+                <li>⭐ <strong>Nueva Reseña:</strong> "¡Los medialunas están deliciosas!" - María G.</li>
+                <li>🎯 <strong>Meta Superada:</strong> Ventas mensuales +10% sobre la meta</li>
+                <li>🚨 <strong>Pedido Urgente:</strong> Pedido #00126 requiere atención inmediata</li>
+                <li>📈 <strong>Tendencia Positiva:</strong> Las tartas han aumentado 25% esta semana</li>
+                <li>🕒 <strong>Horario de Cierre:</strong> Recuerda cerrar la caja registradora</li>
+                <li>🔄 <strong>Mantenimiento:</strong> Revisar hornos en los próximos 3 días</li>
+                <li>💰 <strong>Promoción:</strong> Descuento del 20% en galletas vence mañana</li>
+                <li>👥 <strong>Cliente VIP:</strong> Juan Pérez cumple 5 años como cliente fiel</li>
+                <li>📊 <strong>Reporte Semanal:</strong> Listo para revisión y aprobación</li>
+            </ul>
         </section>
 
         <section class="data-table">
-            <h3>Últimos Pedidos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Pedido</th>
-                        <th>Cliente</th>
-                        <th>Producto</th>
-                        <th>Monto</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#00123</td>
-                        <td>María González</td>
-                        <td>Producto A</td>
-                        <td>$150</td>
-                        <td>Completado</td>
-                    </tr>
-                    <tr>
-                        <td>#00124</td>
-                        <td>Juan Pérez</td>
-                        <td>Producto B</td>
-                        <td>$200</td>
-                        <td>En proceso</td>
-                    </tr>
-                    <tr>
-                        <td>#00125</td>
-                        <td>Ana López</td>
-                        <td>Producto C</td>
-                        <td>$75</td>
-                        <td>Pendiente</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h3>Últimas Órdenes</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Cliente</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Hora</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="order-id">#00123</span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">María González</div>
+                                    <div class="customer-phone">📱 555-0123</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="products-list">
+                                    <span class="product-item">2 Medialunas</span>
+                                    <span class="product-item">1 Café</span>
+                                </div>
+                            </td>
+                            <td><span class="price">$180</span></td>
+                            <td><span class="status-badge completed">Completada</span></td>
+                            <td><span class="time">14:30</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn print" title="Imprimir">🖨️</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#00124</span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">Juan Pérez</div>
+                                    <div class="customer-phone">📱 555-0456</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="products-list">
+                                    <span class="product-item">1 Torta Chocolate</span>
+                                    <span class="product-item">3 Galletas</span>
+                                </div>
+                            </td>
+                            <td><span class="price">$250</span></td>
+                            <td><span class="status-badge preparing">En Preparación</span></td>
+                            <td><span class="time">15:45</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn edit" title="Editar">✏️</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#00125</span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">Ana López</div>
+                                    <div class="customer-phone">📱 555-0789</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="products-list">
+                                    <span class="product-item">4 Croissants</span>
+                                    <span class="product-item">2 Tartas</span>
+                                </div>
+                            </td>
+                            <td><span class="price">$320</span></td>
+                            <td><span class="status-badge pending">Pendiente</span></td>
+                            <td><span class="time">16:20</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn confirm" title="Confirmar">✅</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#00126</span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">Carlos Rodríguez</div>
+                                    <div class="customer-phone">📱 555-0321</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="products-list">
+                                    <span class="product-item">6 Medialunas</span>
+                                    <span class="product-item">2 Cafés</span>
+                                    <span class="product-item">1 Torta</span>
+                                </div>
+                            </td>
+                            <td><span class="price">$450</span></td>
+                            <td><span class="status-badge urgent">Urgente</span></td>
+                            <td><span class="time">16:55</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn priority" title="Priorizar">🚨</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#00127</span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">Laura Martínez</div>
+                                    <div class="customer-phone">📱 555-0654</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="products-list">
+                                    <span class="product-item">3 Tartas</span>
+                                    <span class="product-item">5 Galletas</span>
+                                </div>
+                            </td>
+                            <td><span class="price">$380</span></td>
+                            <td><span class="status-badge delivered">Entregada</span></td>
+                            <td><span class="time">17:10</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn delivered" title="Marcar entregada">📦</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
-    <footer>
-        <p>Desarrollado por EDEN SoftWork | <a href="../index.html">Volver al Portfolio</a></p>
-    </footer>
+    <p style="text-align: center; margin-top: 30px;"><a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a></p>
 
     <script src="script.js"></script>
 </body>
