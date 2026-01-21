@@ -68,10 +68,6 @@
       </div>
     </div>
 
-    <div style="text-align: center; margin-top: 60px;">
-      <button id="togglePortfolio" class="btn portfolio-toggle">Descubre Nuestros Proyectos Realizados</button>
-    </div>
-
     <div id="portfolioSection" class="portfolio-section">
       <h2 style="text-align: center; margin-bottom: 20px; color: #667eea; font-size: 2.5rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Portfolio de Proyectos</h2>
       <p style="text-align: center; margin-bottom: 40px; font-size: 1.1em; color: #555;">Explora ejemplos de soluciones que hemos desarrollado para diversos clientes.</p>
@@ -199,38 +195,12 @@
       smoothScrollTo(target, 1000);
     });
 
-    // Toggle portfolio section with smooth animation
-    document.getElementById('togglePortfolio').addEventListener('click', function() {
-      const portfolioSection = document.getElementById('portfolioSection');
-      if (portfolioSection.style.maxHeight) {
-        portfolioSection.style.maxHeight = null;
-        portfolioSection.style.opacity = '0';
-        this.textContent = 'Descubre Nuestros Proyectos Realizados';
-      } else {
-        portfolioSection.style.maxHeight = portfolioSection.scrollHeight + 'px';
-        portfolioSection.style.opacity = '1';
-        this.textContent = 'Ocultar Proyectos';
-      }
-    });
-
     // Handle nav proyectos click
     document.getElementById('nav-proyectos').addEventListener('click', function(e) {
       e.preventDefault();
-      // Scroll to servicios
-      const serviciosTarget = document.querySelector('#servicios');
-      smoothScrollTo(serviciosTarget, 1000);
-      // Toggle portfolio if not visible
-      const portfolioSection = document.getElementById('portfolioSection');
-      if (!portfolioSection.style.maxHeight || portfolioSection.style.maxHeight === '0px') {
-        portfolioSection.style.maxHeight = portfolioSection.scrollHeight + 'px';
-        portfolioSection.style.opacity = '1';
-        document.getElementById('togglePortfolio').textContent = 'Ocultar Proyectos';
-        // Scroll to portfolio after animation
-        setTimeout(() => {
-          const portfolioTarget = document.getElementById('portfolioSection');
-          smoothScrollTo(portfolioTarget, 1000);
-        }, 600); // Adjust delay to match transition
-      }
+      // Scroll directly to portfolio section
+      const portfolioTarget = document.getElementById('portfolioSection');
+      smoothScrollTo(portfolioTarget, 1000);
     });
 
     // Make portfolio items clickable

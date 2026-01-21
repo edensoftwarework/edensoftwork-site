@@ -351,10 +351,6 @@ section {
 }
 
 .portfolio-section {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: all 0.5s ease;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 20px;
   margin-top: 40px;
