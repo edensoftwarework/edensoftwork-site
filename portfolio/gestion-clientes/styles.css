@@ -235,3 +235,18 @@ textarea {
     align-items: center;
   }
 }
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  .client-card {
+    padding: 15px;
+  }
+  .client-info h3 {
+    font-size: 1.1rem;
+  }
+  .modal-content {
+    padding: 15px;
+  }
+}

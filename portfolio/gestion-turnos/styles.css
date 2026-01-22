@@ -346,3 +346,68 @@ button:hover {
 .back-link:hover {
   text-decoration: underline;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  .container {
+    max-width: 100%;
+    padding: 20px;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  form {
+    gap: 10px;
+  }
+  .date-time-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .date-time-row div {
+    width: 100%;
+  }
+  .stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .calendar {
+    overflow-x: auto;
+  }
+  #calendar {
+    grid-template-columns: repeat(7, minmax(40px, 1fr));
+  }
+  .modal-content {
+    width: 90%;
+    left: 5%;
+    right: 5%;
+    top: 5%;
+    bottom: 5%;
+  }
+  .timeline {
+    padding-left: 50px;
+  }
+  .timeline-appointment {
+    left: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  input, button {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .appointment {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .delete-btn, .edit-btn {
+    align-self: flex-end;
+    margin-top: 5px;
+  }
+}

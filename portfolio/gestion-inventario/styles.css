@@ -306,3 +306,19 @@ tr:hover {
     font-size: 14px;
   }
 }
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  .product-card {
+    padding: 15px;
+  }
+  .modal-content {
+    padding: 15px;
+  }
+  table th, table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}

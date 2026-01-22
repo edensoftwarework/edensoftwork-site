@@ -283,3 +283,25 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+  .hero p {
+    font-size: 1rem;
+  }
+  .btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+  .product-item {
+    padding: 15px;
+  }
+  .product-item h3 {
+    font-size: 1.2rem;
+  }
+  footer {
+    padding: 20px;
+  }
+}
