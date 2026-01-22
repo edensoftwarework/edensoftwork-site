@@ -55,27 +55,43 @@ input, button {
   font-size: 16px;
 }
 button {
-  background: #667eea;
+  background: linear-gradient(90deg, #5a67d8 0%, #4c51bf 50%, #5a67d8 100%);
   color: white;
   border: none;
   cursor: pointer;
   transition: background 0.3s;
+  box-shadow: 0 4px 15px rgba(90, 103, 216, 0.3);
 }
 button:hover {
-  background: #5a67d8;
+  background: linear-gradient(90deg, #4c51bf 0%, #3b3f8a 50%, #4c51bf 100%);
+  box-shadow: 0 6px 20px rgba(90, 103, 216, 0.4);
+}
+#appointment-form button {
+  padding: 12px 20px;
+  align-self: center;
+}
+#edit-form button {
+  padding: 12px 20px;
+  align-self: center;
 }
 .appointments {
   margin-top: 30px;
 }
 .appointment {
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.appointment:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 .delete-btn {
   background: #e53e3e;
@@ -184,7 +200,18 @@ button:hover {
   background-color: #fefefe;
   padding: 20px;
   border: 1px solid #888;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
   overflow-y: auto;
+}
+.modal-content h3 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  margin: -20px -20px 20px -20px;
+  border-radius: 12px 12px 0 0;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 .close {
   position: absolute;

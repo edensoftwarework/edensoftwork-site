@@ -36,14 +36,16 @@ input, select, button, textarea {
   font-size: 16px;
 }
 button {
-  background: #667eea;
+  background: linear-gradient(90deg, #5a67d8 0%, #4c51bf 50%, #5a67d8 100%);
   color: white;
   border: none;
   cursor: pointer;
   transition: background 0.3s;
+  box-shadow: 0 4px 15px rgba(90, 103, 216, 0.3);
 }
 button:hover {
-  background: #5a67d8;
+  background: linear-gradient(90deg, #4c51bf 0%, #3b3f8a 50%, #4c51bf 100%);
+  box-shadow: 0 6px 20px rgba(90, 103, 216, 0.4);
 }
 .stats-section {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -235,9 +237,19 @@ tr:hover {
   background-color: #fefefe;
   padding: 20px;
   border: 1px solid #888;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
   overflow-y: auto;
   max-height: 80%;
+}
+.modal-content h3 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  margin: -20px -20px 20px -20px;
+  border-radius: 8px 8px 0 0;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 .close {
   position: absolute;
