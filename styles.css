@@ -266,6 +266,9 @@ footer {
 section {
   animation: fadeIn 1s ease-out;
 }
+#servicios, #acerca, #contacto, #portfolioSection {
+  scroll-margin-top: 120px;
+}
 .service-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -386,6 +389,7 @@ section {
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   border: 1px solid #e9ecef;
+  border-left: 3px solid #667eea;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }

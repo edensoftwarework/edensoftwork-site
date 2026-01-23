@@ -222,34 +222,7 @@ function updateMetricChangeClasses(changes) {
   });
 }
 
-// Export data to CSV
-function exportToCSV() {
-  const data = dataSets[currentPeriod];
-  const csvData = [
-    ['Métrica', 'Valor', 'Cambio'],
-    ['Ventas Totales', data.metrics.ventas, data.changes.ventas],
-    ['Clientes Diarios', data.metrics.clientes, data.changes.clientes],
-    ['Productos Vendidos', data.metrics.productos, data.changes.productos],
-    ['Satisfacción del Cliente', data.metrics.satisfaccion, data.changes.satisfaccion],
-    ['Inventario Bajo', data.metrics.inventario, data.changes.inventario],
-    ['Margen de Ganancia', data.metrics.margen, data.changes.margen],
-    ['Pedidos Pendientes', data.metrics.pedidos, data.changes.pedidos],
-    ['Tiempo Promedio de Entrega', data.metrics.tiempo, data.changes.tiempo]
-  ];
-
-  let csvContent = 'data:text/csv;charset=utf-8,';
-  csvData.forEach(row => {
-    csvContent += row.join(',') + '\n';
-  });
-
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', `dashboard-panaderia-${currentPeriod}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+// (First export function removed)
 
 // Data sets for different periods
 const dataSets = {
@@ -377,33 +350,65 @@ function updateDashboard(period) {
   drawPieChart('categoryChart', data.categories, categoryLabels);
 }
 
-// Export data to CSV
-function exportToCSV() {
-  const data = dataSets[currentPeriod];
-  const csvData = [
-    ['Métrica', 'Valor', 'Cambio'],
-    ['Ventas Totales', data.metrics.ventas, data.changes.ventas],
-    ['Clientes Diarios', data.metrics.clientes, data.changes.clientes],
-    ['Productos Vendidos', data.metrics.productos, data.changes.productos],
-    ['Satisfacción del Cliente', data.metrics.satisfaccion, data.changes.satisfaccion],
-    ['Inventario Bajo', data.metrics.inventario, data.changes.inventario],
-    ['Margen de Ganancia', data.metrics.margen, data.changes.margen],
-    ['Pedidos Pendientes', data.metrics.pedidos, data.changes.pedidos],
-    ['Tiempo Promedio de Entrega', data.metrics.tiempo, data.changes.tiempo]
+// Export data to Excel
+async function exportToCSV() {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Dashboard');
+
+  worksheet.columns = [
+    { header: 'Métrica', key: 'metrica', width: 25 },
+    { header: 'Valor', key: 'valor', width: 15 },
+    { header: 'Cambio', key: 'cambio', width: 15 }
   ];
 
-  let csvContent = 'data:text/csv;charset=utf-8,';
-  csvData.forEach(row => {
-    csvContent += row.join(',') + '\n';
-  });
+  const data = dataSets[currentPeriod];
+  worksheet.addRow({ metrica: 'Ventas Totales', valor: data.metrics.ventas, cambio: data.changes.ventas });
+  worksheet.addRow({ metrica: 'Clientes Diarios', valor: data.metrics.clientes, cambio: data.changes.clientes });
+  worksheet.addRow({ metrica: 'Productos Vendidos', valor: data.metrics.productos, cambio: data.changes.productos });
+  worksheet.addRow({ metrica: 'Satisfacción del Cliente', valor: data.metrics.satisfaccion, cambio: data.changes.satisfaccion });
+  worksheet.addRow({ metrica: 'Inventario Bajo', valor: data.metrics.inventario, cambio: data.changes.inventario });
+  worksheet.addRow({ metrica: 'Margen de Ganancia', valor: data.metrics.margen, cambio: data.changes.margen });
+  worksheet.addRow({ metrica: 'Pedidos Pendientes', valor: data.metrics.pedidos, cambio: data.changes.pedidos });
+  worksheet.addRow({ metrica: 'Tiempo Promedio de Entrega', valor: data.metrics.tiempo, cambio: data.changes.tiempo });
 
-  const encodedUri = encodeURI(csvContent);
+  // Add charts worksheet
+  const chartSheet = workbook.addWorksheet('Gráficos');
+  chartSheet.getColumn('A').width = 60;
+
+  // Capture sales chart
+  const salesCanvas = document.getElementById('salesChart');
+  if (salesCanvas) {
+    const salesImageId = workbook.addImage({
+      base64: salesCanvas.toDataURL('image/png').split(',')[1],
+      extension: 'png',
+    });
+    chartSheet.addImage(salesImageId, {
+      tl: { col: 0, row: 0 },
+      ext: { width: 600, height: 300 }
+    });
+  }
+
+  // Capture category chart
+  const categoryCanvas = document.getElementById('categoryChart');
+  if (categoryCanvas) {
+    const categoryImageId = workbook.addImage({
+      base64: categoryCanvas.toDataURL('image/png').split(',')[1],
+      extension: 'png',
+    });
+    chartSheet.addImage(categoryImageId, {
+      tl: { col: 0, row: 20 },
+      ext: { width: 600, height: 300 }
+    });
+  }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', `dashboard-panaderia-${currentPeriod}.csv`);
-  document.body.appendChild(link);
+  link.href = url;
+  link.download = `dashboard-panaderia-${currentPeriod}.xlsx`;
   link.click();
-  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // Initialize charts when page loads
@@ -416,7 +421,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Export button functionality
-  document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+  document.getElementById('exportBtn').addEventListener('click', async () => {
+    await exportToCSV();
+  });
 
   // Table action buttons functionality
   initializeTableActions();
