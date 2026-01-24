@@ -145,7 +145,7 @@ section {
 .services {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 50px;
 }
 .service-card {
   background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
