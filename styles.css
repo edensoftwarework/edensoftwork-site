@@ -144,7 +144,7 @@ section {
 }
 .services {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 30px;
 }
 .service-card {
@@ -313,7 +313,7 @@ section {
     margin: 10px 0;
   }
   .center-logo {
-    height: 50px;
+    height: 40px;
   }
   .services {
     grid-template-columns: 1fr;
@@ -514,5 +514,10 @@ section {
   }
   .portfolio-item h3 {
     font-size: 1.3rem;
+  }
+}
+@media (min-width: 1200px) {
+  section {
+    max-width: none;
   }
 }
