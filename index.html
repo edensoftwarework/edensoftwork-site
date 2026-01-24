@@ -226,6 +226,60 @@
         }
       });
     });
+
+    // Row-based hover for service cards
+    const serviceCards = document.querySelectorAll('.service-card');
+    let rowExpanded = [false, false]; // State for each row
+
+    function showRow(row) {
+      const start = row * 3;
+      const end = start + 3;
+      for (let i = start; i < end; i++) {
+        const p = serviceCards[i].querySelector('p');
+        p.style.opacity = '1';
+        p.style.maxHeight = '300px';
+      }
+    }
+
+    function hideRow(row) {
+      const start = row * 3;
+      const end = start + 3;
+      for (let i = start; i < end; i++) {
+        const p = serviceCards[i].querySelector('p');
+        p.style.opacity = '0';
+        p.style.maxHeight = '0';
+      }
+    }
+
+    serviceCards.forEach((card, index) => {
+      const row = Math.floor(index / 3);
+      card.addEventListener('mouseenter', () => {
+        if (!rowExpanded[row]) {
+          showRow(row);
+        }
+      });
+      card.addEventListener('mouseleave', () => {
+        if (!rowExpanded[row]) {
+          hideRow(row);
+        }
+      });
+      card.addEventListener('click', () => {
+        rowExpanded[row] = !rowExpanded[row];
+        const start = row * 3;
+        const end = start + 3;
+        if (rowExpanded[row]) {
+          showRow(row);
+          for (let i = start; i < end; i++) {
+            serviceCards[i].classList.add('selected');
+          }
+        } else {
+          hideRow(row);
+          for (let i = start; i < end; i++) {
+            serviceCards[i].classList.remove('selected');
+          }
+        }
+      });
+    });
   </script>
 </body>
 </html>
