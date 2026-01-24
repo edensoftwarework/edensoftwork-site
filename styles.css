@@ -149,7 +149,7 @@ section {
 }
 .service-card {
   background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-  padding: 20px 30px 20px 30px; /* Balanced padding, expansion via max-height */
+  padding: 20px 20px 20px 20px; /* Balanced padding, expansion via max-height */
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   text-align: center;
@@ -339,7 +339,7 @@ section {
 }
 @media (max-width: 768px) and (orientation: portrait) {
   .center-logo {
-    height: 25px;
+    display: none;
   }
 }
 @media (max-width: 768px) and (orientation: landscape) {
