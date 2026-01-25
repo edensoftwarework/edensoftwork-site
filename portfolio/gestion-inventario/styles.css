@@ -344,12 +344,12 @@ tr:hover {
   width: auto;
 }
 @media (max-width: 768px) and (orientation: portrait) {
-  .center-logo {
+  .small-logo {
     display: none !important;
   }
 }
 @media (max-width: 768px) and (orientation: landscape) {
-  .center-logo {
+  .small-logo {
     height: 30px;
   }
 }
