@@ -339,7 +339,7 @@ section {
 }
 @media (max-width: 768px) and (orientation: portrait) {
   .center-logo {
-    display: none;
+    display: none !important;
   }
 }
 @media (max-width: 768px) and (orientation: landscape) {
