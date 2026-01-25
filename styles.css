@@ -145,7 +145,7 @@ section {
 .services {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 50px;
+  gap: 40px;
 }
 .service-card {
   background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
@@ -339,12 +339,12 @@ section {
 }
 @media (max-width: 768px) and (orientation: portrait) {
   .center-logo {
-    display: none !important;
+    height: 40px;
   }
 }
 @media (max-width: 768px) and (orientation: landscape) {
   .center-logo {
-    height: 30px;
+    height: 35px;
   }
 }
 @media (max-width: 480px) {

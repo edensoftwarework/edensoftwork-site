@@ -343,3 +343,13 @@ tr:hover {
   height: 60px;
   width: auto;
 }
+@media (max-width: 768px) and (orientation: portrait) {
+  .center-logo {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) and (orientation: landscape) {
+  .center-logo {
+    height: 30px;
+  }
+}

@@ -782,3 +782,13 @@ tbody td {
     font-size: 1.5rem;
   }
 }
+@media (max-width: 768px) and (orientation: portrait) {
+  .center-logo {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) and (orientation: landscape) {
+  .center-logo {
+    height: 30px;
+  }
+}
