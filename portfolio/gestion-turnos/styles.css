@@ -446,7 +446,7 @@ button:hover {
     margin-top: 5px;
   }
 }
-@media (max-width: 768px) and (orientation: portrait) {
+@media (orientation: portrait) {
   .small-logo {
     display: none !important;
   }

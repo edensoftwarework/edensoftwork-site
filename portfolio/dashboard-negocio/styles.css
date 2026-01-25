@@ -782,7 +782,7 @@ tbody td {
     font-size: 1.5rem;
   }
 }
-@media (max-width: 768px) and (orientation: portrait) {
+@media (orientation: portrait) {
   .small-logo {
     display: none !important;
   }

@@ -343,7 +343,7 @@ tr:hover {
   height: 60px;
   width: auto;
 }
-@media (max-width: 768px) and (orientation: portrait) {
+@media (orientation: portrait) {
   .small-logo {
     display: none !important;
   }
