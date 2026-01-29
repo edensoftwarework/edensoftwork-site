@@ -133,6 +133,7 @@
 
   <footer>
     <p>&copy; 2026 EDEN SoftWork</p>
+    <p>Correo electrónico: <a href="mailto:edensoftwarework@gmail.com" style="color: #667eea; text-decoration: none;">edensoftwarework@gmail.com</a></p>
     <p><a href="#inicio" style="color: #667eea; text-decoration: none;">Volver arriba</a></p>
   </footer>
 
@@ -167,7 +168,7 @@
     }
 
     // Smooth scrolling for navigation links
-    document.querySelectorAll('nav a').forEach(anchor => {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));

@@ -3,6 +3,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+html {
+  scroll-behavior: smooth;
+}
 body {
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
@@ -125,13 +128,20 @@ nav ul li a:hover {
   text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 .btn {
-  background-color: #667eea;
+  background: #7f8c8d;
   color: white;
   padding: 12px 30px;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 25px;
   font-weight: 500;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
+}
+.btn:hover {
+  background: #6c7b7d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(127, 140, 141, 0.6);
 }
 .btn:focus {
   outline: 2px solid #667eea;
@@ -280,13 +290,23 @@ section {
   margin-right: auto;
 }
 .contact {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #f0f0ff;
+  color: #333;
   padding: 60px 20px;
   text-align: center;
-  border-radius: 15px;
-  margin: 80px auto;
-  max-width: 1200px;
+  margin: 80px 0;
+  width: 100%;
+}
+.contact h2 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+.contact p {
+  margin-bottom: 40px;
+  font-size: 1.2rem;
+  line-height: 1.6;
 }
 .contact form {
   max-width: 600px;
@@ -296,22 +316,33 @@ section {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
-  border: none;
-  border-radius: 5px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+.contact input:focus, .contact textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
 }
 .contact button {
-  background-color: #667eea;
+  background: linear-gradient(90deg, #667eea 0%, #4c51bf 50%, #667eea 100%);
   color: white;
   padding: 12px 30px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s;
+  font-size: 16px;
+  transition: background 0.3s, transform 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 .contact button:hover {
-  background-color: #5a67d8;
+  background: linear-gradient(90deg, #5a67d8 0%, #3b3f8a 50%, #5a67d8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 .contact button:focus {
   outline: 2px solid #667eea;

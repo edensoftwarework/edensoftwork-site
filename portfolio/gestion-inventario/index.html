@@ -175,9 +175,9 @@
       <div class="modal-content">
         <span class="close" id="category-close">&times;</span>
         <h3>Agregar Categoría</h3>
-        <form id="category-form">
+        <form id="category-form" style="display: flex; flex-direction: column;">
           <input type="text" id="category-name" placeholder="Nombre de Categoría" required>
-          <button type="submit">Agregar</button>
+          <button type="submit" style="align-self: center; margin-top: 20px;">Agregar</button>
         </form>
       </div>
     </div>
@@ -186,10 +186,10 @@
       <div class="modal-content">
         <span class="close" id="supplier-close">&times;</span>
         <h3>Agregar Proveedor</h3>
-        <form id="supplier-form">
+        <form id="supplier-form" style="display: flex; flex-direction: column;">
           <input type="text" id="supplier-name" placeholder="Nombre del Proveedor" required>
           <input type="text" id="supplier-contact" placeholder="Contacto">
-          <button type="submit">Agregar</button>
+          <button type="submit" style="align-self: center; margin-top: 20px;">Agregar</button>
         </form>
       </div>
     </div>
@@ -210,7 +210,9 @@
           <input type="number" id="movement-quantity" placeholder="Cantidad" min="1" required>
           <input type="date" id="movement-date" required>
           <textarea id="movement-notes" placeholder="Notas"></textarea>
-          <button type="submit">Registrar</button>
+          <div style="display: flex; justify-content: center; margin-top: 10px;">
+            <button type="submit">Registrar</button>
+          </div>
         </form>
       </div>
     </div>
@@ -247,8 +249,10 @@
           <input type="number" id="initial-stock" placeholder="Stock Inicial" min="0" required>
           <input type="text" id="unit" placeholder="Unidad (ej. unidades, kg)" required>
           <input type="number" id="low-stock-threshold" placeholder="Umbral Bajo Stock" min="0" value="10">
-          <button type="submit" id="submit-product-btn">Agregar Producto</button>
-          <button type="button" id="cancel-product">Cancelar</button>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <button type="submit" id="submit-product-btn">Agregar Producto</button>
+            <button type="button" id="cancel-product">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>
