@@ -12,7 +12,7 @@
   <div class="container">
     <img src="logo_4.png" class="small-logo" alt="EDEN SoftWork Logo">
     <h1>Sistema de Reservas de Turnos</h1>
-    <p>Sistema para agregar, visualizar y gestionar turnos. Ideal para peluquerías, clínicas y talleres.</p>
+    <p>Sistema para agregar, visualizar y gestionar turnos. Ideal para clínicas, peluquerías y talleres.</p>
     <form id="appointment-form">
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
       <div class="date-time-row">
@@ -66,7 +66,10 @@
         <span class="close" id="edit-close">&times;</span>
         <h3>Editar Turno</h3>
         <form id="edit-form">
-          <input type="text" id="edit-client" placeholder="Nombre del cliente" required>
+          <div>
+            <label for="edit-client">Nombre del Cliente</label>
+            <input type="text" id="edit-client" placeholder="Nombre del cliente" required>
+          </div>
           <div class="date-time-row">
             <div>
               <label for="edit-date">Fecha turno</label>
