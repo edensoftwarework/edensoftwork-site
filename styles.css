@@ -460,6 +460,19 @@ section {
   .hero p {
     font-size: 1.5rem;
   }
+  .about h2 {
+    font-size: 3rem;
+  }
+  .about p {
+    font-size: 1.2rem;
+    max-width: 900px !important;
+  }
+  .contact p {
+    font-size: 1.4rem;
+  }
+  .contact input, .contact textarea {
+    font-size: 18px;
+  }
 }
 
 /* Portfolio toggle and section */
