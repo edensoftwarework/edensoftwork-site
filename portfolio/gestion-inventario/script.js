@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockChartContainer = document.getElementById('stock-chart-container');
     const toggleValueChart = document.getElementById('toggle-value-chart');
     const valueChartContainer = document.getElementById('value-chart-container');
+    const toggleDemandChart = document.getElementById('toggle-demand-chart');
+    const demandChartContainer = document.getElementById('demand-chart-container');
+    const demandProductFilter = document.getElementById('demand-product-filter');
     const toggleMovements = document.getElementById('toggle-movements');
     const movementsContainer = document.getElementById('movements-container');
     const filterMovementProduct = document.getElementById('filter-movement-product');
@@ -41,14 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const productModal = document.getElementById('product-modal');
 
     // Datos
-    let products = JSON.parse(localStorage.getItem('inventory-products')) || [];
-    let categories = JSON.parse(localStorage.getItem('inventory-categories')) || [];
-    let suppliers = JSON.parse(localStorage.getItem('inventory-suppliers')) || [];
-    let movements = JSON.parse(localStorage.getItem('inventory-movements')) || [];
+    let products = [];
+    let categories = [];
+    let suppliers = [];
+    let movements = [];
     let currentEditId = null;
 
     // Gráficos
-    let categoryChart, stockChart, valueChart;
+    let categoryChart, stockChart, valueChart, demandChart;
+    let currentDemandMonths = 6; // Período predeterminado
+
+    // IDs de datos de demostración (no modificables permanentemente)
+    const DEMO_IDS = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
     // Funciones de guardado
     function saveData() {
@@ -57,6 +64,111 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('inventory-suppliers', JSON.stringify(suppliers));
         localStorage.setItem('inventory-movements', JSON.stringify(movements));
     }
+
+    // Datos de demostración base (siempre se cargan)
+    const demoCategories = [
+        { id: '1', name: 'Ingredientes Básicos' },
+        { id: '2', name: 'Carnes y Proteínas' },
+        { id: '3', name: 'Verduras y Frutas' },
+        { id: '4', name: 'Bebidas' },
+        { id: '5', name: 'Lácteos' }
+    ];
+
+    const demoSuppliers = [
+        { id: '1', name: 'Distribuidora de Alimentos S.A.' },
+        { id: '2', name: 'Proveedor de Carnes Fresca' },
+        { id: '3', name: 'Verduras Orgánicas Ltda.' },
+        { id: '4', name: 'Bebidas Nacionales' },
+        { id: '5', name: 'Lácteos del Valle' }
+    ];
+
+    const demoProducts = [
+        { id: '1', name: 'Harina de Trigo', category: '1', supplier: '1', salePrice: 2500, stock: 50, unit: 'kg', lowStockThreshold: 10 },
+        { id: '2', name: 'Carne Molida', category: '2', supplier: '2', salePrice: 12000, stock: 20, unit: 'kg', lowStockThreshold: 5 },
+        { id: '3', name: 'Tomates', category: '3', supplier: '3', salePrice: 3000, stock: 30, unit: 'kg', lowStockThreshold: 8 },
+        { id: '4', name: 'Coca-Cola', category: '4', supplier: '4', salePrice: 1500, stock: 100, unit: 'unidades', lowStockThreshold: 20 },
+        { id: '5', name: 'Queso Cheddar', category: '5', supplier: '5', salePrice: 8000, stock: 15, unit: 'kg', lowStockThreshold: 3 },
+        { id: '6', name: 'Aceite de Oliva', category: '1', supplier: '1', salePrice: 4500, stock: 12, unit: 'litros', lowStockThreshold: 8 },
+        { id: '7', name: 'Lechuga', category: '3', supplier: '3', salePrice: 1800, stock: 10, unit: 'kg', lowStockThreshold: 6 },
+        { id: '8', name: 'Sal', category: '1', supplier: '1', salePrice: 800, stock: 3, unit: 'kg', lowStockThreshold: 5 }
+    ];
+
+    // Función para generar movimientos de demostración
+    function generateDemoMovements() {
+        const demoMovements = [];
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 18);
+        let movementId = 1;
+        for (let i = 0; i < 700; i++) {
+            const randomDays = Math.floor(Math.random() * 18 * 30);
+            const date = new Date(startDate);
+            date.setDate(date.getDate() + randomDays);
+            const product = demoProducts[Math.floor(Math.random() * demoProducts.length)];
+            const type = Math.random() > 0.5 ? 'entrada' : 'salida';
+            const quantity = Math.floor(Math.random() * 10) + 1;
+            let notes = '';
+            if (type === 'salida') {
+                if (product.name === 'Harina de Trigo') notes = ['Elaboración de pan', 'Preparación de masa para pizza', 'Repostería', 'Empanizado'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Carne Molida') notes = ['Preparación de hamburguesas', 'Salsa bolognesa', 'Albóndigas', 'Tacos'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Tomates') notes = ['Preparación de ensaladas', 'Salsa de tomate', 'Guarniciones', 'Platos principales'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Coca-Cola') notes = ['Venta al cliente', 'Servicio de mesa', 'Pedido para llevar', 'Delivery'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Queso Cheddar') notes = ['Preparación de hamburguesas', 'Gratinados', 'Nachos', 'Sándwiches'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Aceite de Oliva') notes = ['Frituras', 'Aderezos para ensaladas', 'Salteados', 'Marinados'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Lechuga') notes = ['Ensaladas', 'Guarniciones', 'Hamburguesas', 'Wraps'][Math.floor(Math.random() * 4)];
+                else if (product.name === 'Sal') notes = ['Condimentación general', 'Salmueras', 'Preparación de carnes', 'Panadería'][Math.floor(Math.random() * 4)];
+            } else {
+                notes = ['Compra semanal', 'Reposición de stock', 'Pedido especial', 'Entrega de proveedor'][Math.floor(Math.random() * 4)];
+            }
+            demoMovements.push({
+                id: movementId.toString(),
+                product: product.id,
+                type,
+                quantity,
+                date: date.toISOString().split('T')[0],
+                notes
+            });
+            movementId++;
+        }
+        return demoMovements;
+    }
+
+    // Cargar datos: siempre incluir datos demo + datos adicionales del usuario
+    function loadData() {
+        // Siempre cargar datos de demostración
+        categories = [...demoCategories];
+        suppliers = [...demoSuppliers];
+        products = [...demoProducts];
+        movements = generateDemoMovements();
+
+        // Cargar datos adicionales del usuario desde localStorage
+        const savedProducts = localStorage.getItem('inventory-products');
+        const savedCategories = localStorage.getItem('inventory-categories');
+        const savedSuppliers = localStorage.getItem('inventory-suppliers');
+        const savedMovements = localStorage.getItem('inventory-movements');
+
+        if (savedCategories) {
+            const userCategories = JSON.parse(savedCategories).filter(c => !DEMO_IDS.includes(c.id));
+            categories = [...categories, ...userCategories];
+        }
+
+        if (savedSuppliers) {
+            const userSuppliers = JSON.parse(savedSuppliers).filter(s => !DEMO_IDS.includes(s.id));
+            suppliers = [...suppliers, ...userSuppliers];
+        }
+
+        if (savedProducts) {
+            const userProducts = JSON.parse(savedProducts).filter(p => !DEMO_IDS.includes(p.id));
+            products = [...products, ...userProducts];
+        }
+
+        if (savedMovements) {
+            const userMovements = JSON.parse(savedMovements).filter(m => parseInt(m.id) > 700);
+            movements = [...movements, ...userMovements];
+        }
+    }
+
+    // Inicializar datos
+    loadData();
 
     // Mostrar mensaje
     function showMessage(message) {
@@ -256,7 +368,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     labels: categoryLabels,
                     datasets: [{
                         data: categoryValues,
-                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4fd1c4', '#ed64a6']
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.9)',
+                            'rgba(118, 75, 162, 0.9)',
+                            'rgba(240, 147, 251, 0.9)',
+                            'rgba(245, 87, 108, 0.9)',
+                            'rgba(79, 209, 196, 0.9)',
+                            'rgba(237, 100, 166, 0.9)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 3,
+                        hoverOffset: 15
                     }]
                 },
                 options: {
@@ -265,15 +387,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Productos por Categoría'
+                            text: 'Productos por Categoría',
+                            font: {
+                                size: 18,
+                                weight: 'bold',
+                                family: "'Roboto', sans-serif"
+                            },
+                            color: '#1e293b',
+                            padding: 20
                         },
                         legend: {
                             labels: {
                                 font: {
                                     size: 14,
-                                    weight: 'bold'
-                                }
-                            }
+                                    weight: '600',
+                                    family: "'Roboto', sans-serif"
+                                },
+                                color: '#475569',
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            },
+                            position: 'bottom'
                         },
                         tooltip: {
                             enabled: false
@@ -417,13 +552,133 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Renderizar gráfico de demanda temporal
+    function renderDemandChart() {
+        const selectedProductId = demandProductFilter.value;
+        if (!selectedProductId || demandChartContainer.style.display === 'none') return;
+
+        const selectedProduct = products.find(p => p.id === selectedProductId);
+        if (!selectedProduct) return;
+
+        // Filtrar movimientos de salida del producto seleccionado
+        const productMovements = movements.filter(m => 
+            m.product === selectedProductId && m.type === 'salida'
+        );
+
+        // Calcular fecha límite según el rango seleccionado
+        const now = new Date();
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - currentDemandMonths);
+
+        // Filtrar por rango de fecha
+        const filteredMovements = productMovements.filter(m => {
+            const moveDate = new Date(m.date);
+            return moveDate >= startDate && moveDate <= now;
+        });
+
+        // Agrupar por mes
+        const monthlyData = {};
+        filteredMovements.forEach(m => {
+            const date = new Date(m.date);
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            monthlyData[monthKey] = (monthlyData[monthKey] || 0) + m.quantity;
+        });
+
+        // Generar todos los meses en el rango
+        const labels = [];
+        const data = [];
+        const current = new Date(startDate);
+        while (current <= now) {
+            const monthKey = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+            const monthLabel = current.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            labels.push(monthLabel);
+            data.push(monthlyData[monthKey] || 0);
+            current.setMonth(current.getMonth() + 1);
+        }
+
+        // Destruir gráfico anterior
+        if (demandChart) demandChart.destroy();
+
+        // Crear nuevo gráfico
+        demandChart = new Chart(document.getElementById('demandChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `Salidas de ${selectedProduct.name}`,
+                    data: data,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            font: { size: 11, weight: 'bold' },
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
+                        title: {
+                            display: true,
+                            text: 'Período',
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) { return Number.isInteger(value) ? value : null; },
+                            font: { size: 12, weight: 'bold' }
+                        },
+                        title: {
+                            display: true,
+                            text: `Cantidad (${selectedProduct.unit})`,
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Demanda Temporal - ${selectedProduct.name}`,
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                return `Salidas: ${context.parsed.y} ${selectedProduct.unit}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     // Renderizar historial de movimientos
     function renderMovements(filteredMovements = movements) {
         const movementsTbody = document.getElementById('movements-tbody');
         movementsTbody.innerHTML = '';
         const sortedMovements = [...filteredMovements].sort((a, b) => new Date(b.date) - new Date(a.date));
         sortedMovements.forEach(movement => {
-            const product = products.find(p => p.id === movement.productId);
+            const product = products.find(p => p.id === movement.product);
             const productName = product ? product.name : 'Producto eliminado';
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -446,7 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const toDate = filterMovementTo.value;
 
         if (productFilter) {
-            filtered = filtered.filter(m => m.productId === productFilter);
+            filtered = filtered.filter(m => m.product === productFilter);
         }
         if (typeFilter) {
             filtered = filtered.filter(m => m.type === typeFilter);
@@ -502,7 +757,11 @@ document.addEventListener('DOMContentLoaded', () => {
         productsTable.innerHTML = '';
         filteredProducts.forEach(product => {
             const row = document.createElement('tr');
-            if (product.stock <= product.lowStockThreshold) row.classList.add('low-stock');
+            if (product.stock <= product.lowStockThreshold) {
+                row.classList.add('low-stock');
+            } else if (product.stock > product.lowStockThreshold && product.stock <= product.lowStockThreshold * 2) {
+                row.classList.add('normal-stock');
+            }
             row.innerHTML = `
                 <td>${product.name}</td>
                 <td>${categories.find(c => c.id === product.category)?.name || 'N/A'}</td>
@@ -510,9 +769,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${product.stock} ${product.unit}</td>
                 <td>$${product.salePrice.toFixed(2)}</td>
                 <td>$${(product.stock * product.salePrice).toFixed(2)}</td>
-                <td>
-                    <button class="edit-btn" data-id="${product.id}">Editar</button>
-                    <button class="delete-btn" data-id="${product.id}">Eliminar</button>
+                <td class="action-buttons">
+                    <button class="edit-btn" data-id="${product.id}" title="Editar">✏️</button>
+                    <button class="delete-btn" data-id="${product.id}" title="Eliminar">🗑️</button>
                 </td>
             `;
             productsTable.appendChild(row);
@@ -713,7 +972,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (type === 'salida') product.stock -= quantity;
         else product.stock = quantity; // ajuste
 
-        movements.push({ id: Date.now().toString(), productId, type, quantity, date, notes });
+        movements.push({ id: Date.now().toString(), product: productId, type, quantity, date, notes });
         saveData();
         movementForm.reset();
         movementModal.style.display = 'none';
@@ -865,7 +1124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         const sortedMovements = [...movements].sort((a, b) => new Date(b.date) - new Date(a.date));
         sortedMovements.forEach(movement => {
-            const product = products.find(p => p.id === movement.productId);
+            const product = products.find(p => p.id === movement.product);
             movementsSheet.addRow({
                 date: movement.date,
                 product: product ? product.name : 'Producto eliminado',
@@ -979,7 +1238,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Evento toggle gráfico de demanda temporal
+    toggleDemandChart.addEventListener('click', () => {
+        const isVisible = demandChartContainer.style.display !== 'none';
+        demandChartContainer.style.display = isVisible ? 'none' : 'block';
+        toggleDemandChart.textContent = isVisible ? 'Ver Gráfico de Demanda Temporal' : 'Ocultar Gráfico de Demanda Temporal';
+        if (!isVisible) {
+            // Poblar selector de productos
+            demandProductFilter.innerHTML = '<option value="">Seleccionar producto</option>';
+            products.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = p.name;
+                demandProductFilter.appendChild(option);
+            });
+            // Seleccionar primer producto por defecto si hay productos
+            if (products.length > 0) {
+                demandProductFilter.value = products[0].id;
+                renderDemandChart();
+            }
+        }
+    });
+
+    // Evento cambio de producto en gráfico de demanda
+    demandProductFilter.addEventListener('change', () => {
+        renderDemandChart();
+    });
+
+    // Eventos para botones de rango temporal
+    document.querySelectorAll('.time-range-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Remover clase active de todos los botones
+            document.querySelectorAll('.time-range-btn').forEach(b => b.classList.remove('active'));
+            // Agregar clase active al botón clickeado
+            e.target.classList.add('active');
+            // Actualizar rango y re-renderizar
+            currentDemandMonths = parseInt(e.target.dataset.months);
+            renderDemandChart();
+        });
+    });
+
     // Evento toggle historial de movimientos
+    // Mostrar la tabla de movimientos al inicio
+    movementsContainer.style.display = 'block';
+    filterMovements();
+
     toggleMovements.addEventListener('click', () => {
         const isVisible = movementsContainer.style.display !== 'none';
         movementsContainer.style.display = isVisible ? 'none' : 'block';
@@ -998,6 +1301,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateDetailedStats(); // Calcular estadísticas solo cuando se muestra
         }
     });
+
+    // Inicializar texto del botón de estadísticas
+    toggleDetailedStats.textContent = 'Ocultar Estadísticas';
 
     // Eventos de filtros de movimientos
     filterMovementProduct.addEventListener('change', filterMovements);
@@ -1031,4 +1337,131 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSelectOptions();
     filterProducts();
     renderCharts();
+    
+    // Inicializar textos de botones de gráficos (ya visibles)
+    toggleCategoryChart.textContent = 'Ocultar Gráfico de Categorías';
+    toggleStockChart.textContent = 'Ocultar Gráfico de Niveles de Stock';
+    toggleValueChart.textContent = 'Ocultar Gráfico de Valor por Producto';
+    toggleDemandChart.textContent = 'Ocultar Gráfico de Demanda Temporal';
+    
+    // Poblar selector de productos en gráfico de demanda
+    demandProductFilter.innerHTML = '<option value="">Seleccionar producto</option>';
+    products.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = p.name;
+        demandProductFilter.appendChild(option);
+    });
+    // Seleccionar primer producto por defecto
+    if (products.length > 0) {
+        demandProductFilter.value = products[0].id;
+        renderDemandChart();
+    }
+
+    // Manejo del modal de tutorial
+    const tutorialModal = document.getElementById('tutorial-modal');
+    const tutorialClose = document.getElementById('tutorial-close');
+    const startDemo = document.getElementById('start-demo');
+
+    // Tutorial slider functionality
+    const steps = document.querySelectorAll('.step');
+    const indicators = document.querySelectorAll('.indicator');
+    const prevBtn = document.getElementById('prev-step');
+    const nextBtn = document.getElementById('next-step');
+    let currentStep = 0;
+    
+    // Initialize: hide prev arrow on first step
+    prevBtn.style.display = 'none';
+
+    // Agregar blur al cargar página con tutorial abierto
+    if (tutorialModal && tutorialModal.style.display === 'block') {
+        document.body.classList.add('tutorial-active');
+    }
+
+    function showStep(index) {
+        steps.forEach((step, i) => {
+            step.classList.remove('active');
+            indicators[i].classList.remove('active');
+        });
+        steps[index].classList.add('active');
+        indicators[index].classList.add('active');
+        currentStep = index;
+        
+        // Hide/show arrows based on position
+        if (currentStep === 0) {
+            prevBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'flex';
+        }
+        
+        if (currentStep === steps.length - 1) {
+            nextBtn.style.display = 'none';
+        } else {
+            nextBtn.style.display = 'flex';
+        }
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            showStep(currentStep - 1);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+            showStep(currentStep + 1);
+        }
+    });
+
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            showStep(index);
+        });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (tutorialModal && tutorialModal.style.display === 'block') {
+            if (e.key === 'ArrowLeft' && currentStep > 0) {
+                showStep(currentStep - 1);
+            } else if (e.key === 'ArrowRight' && currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            }
+        }
+    });
+
+    tutorialClose.addEventListener('click', () => {
+        tutorialModal.style.display = 'none';
+        document.body.classList.remove('tutorial-active');
+    });
+
+    startDemo.addEventListener('click', () => {
+        tutorialModal.style.display = 'none';
+        document.body.classList.remove('tutorial-active');
+    });
+
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (tutorialModal && tutorialModal.style.display === 'block') {
+                tutorialModal.style.display = 'none';
+                document.body.classList.remove('tutorial-active');
+            }
+            if (editModal && editModal.style.display === 'block') {
+                editModal.style.display = 'none';
+            }
+            if (categoryModal && categoryModal.style.display === 'block') {
+                categoryModal.style.display = 'none';
+            }
+            if (supplierModal && supplierModal.style.display === 'block') {
+                supplierModal.style.display = 'none';
+            }
+            if (movementModal && movementModal.style.display === 'block') {
+                movementModal.style.display = 'none';
+            }
+            if (productModal && productModal.style.display === 'block') {
+                productModal.style.display = 'none';
+            }
+        }
+    });
 });

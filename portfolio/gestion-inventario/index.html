@@ -15,81 +15,7 @@
   <div class="container">
     <img src="logo_4.png" class="small-logo" alt="EDEN SoftWork Logo">
     <h1>Sistema de Gestión de Inventario</h1>
-    <p>Sistema para agregar, visualizar y gestionar productos en inventario. Ideal para negocios, tiendas y talleres.</p>
-
-    <!-- Sección de Estadísticas -->
-    <div class="stats-section">
-      <h3>Estadísticas y Gráficos</h3>
-
-      <!-- Estadísticas Detalladas -->
-      <div style="text-align: center; margin: 20px 0;">
-        <button id="toggle-detailed-stats" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Ver Todas las Estadísticas</button>
-      </div>
-      <div id="detailed-stats-container" style="display: none; margin-top: 20px; margin-bottom: 40px;">
-        <div class="detailed-stats">
-          <div class="stat-group">
-            <h4>Total de Productos</h4>
-            <p id="stats-total">0</p>
-          </div>
-          <div class="stat-group">
-            <h4>Valor Total del Inventario</h4>
-            <p id="stats-value">$0</p>
-          </div>
-          <div class="stat-group">
-            <h4>Productos con Bajo Stock</h4>
-            <p id="stats-low-stock">0</p>
-          </div>
-          <div class="stat-group">
-            <h4>Producto con Mayor Valor</h4>
-            <p id="stats-top-value-product">Cargando...</p>
-          </div>
-          <div class="stat-group">
-            <h4>Categoría con Mayor Valor</h4>
-            <p id="stats-top-value-category">Cargando...</p>
-          </div>
-          <div class="stat-group">
-            <h4>Promedio Precio por Categoría</h4>
-            <p id="stats-avg-price-category">Cargando...</p>
-          </div>
-          <div class="stat-group">
-            <h4>Valor Movimientos Último Mes</h4>
-            <p id="stats-monthly-movements">Cargando...</p>
-          </div>
-          <div class="stat-group">
-            <h4>Productos sin Stock</h4>
-            <p id="stats-critical-stock">Cargando...</p>
-          </div>
-          <div class="stat-group">
-            <h4>Proveedor con Más Productos</h4>
-            <p id="stats-top-supplier">Cargando...</p>
-          </div>
-        </div>
-      </div>
-
-      <hr style="border: none; height: 2px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); margin: 40px 0;">
-
-      <!-- Gráficos -->
-      <div class="chart-sections">
-        <div class="chart-section">
-          <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
-          <div id="category-chart-container" style="display: none; margin: 10px auto;">
-            <canvas id="categoryChart" width="400" height="400"></canvas>
-          </div>
-        </div>
-        <div class="chart-section">
-          <button id="toggle-stock-chart">Ver Gráfico de Niveles de Stock</button>
-          <div id="stock-chart-container" style="display: none; margin: 10px auto;">
-            <canvas id="stockChart" width="400" height="400"></canvas>
-          </div>
-        </div>
-        <div class="chart-section">
-          <button id="toggle-value-chart">Ver Gráfico de Valor por Producto</button>
-          <div id="value-chart-container" style="display: none; margin: 10px auto;">
-            <canvas id="valueChart" width="400" height="400"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
+    <p>Sistema profesional para agregar, visualizar y gestionar productos en inventario. Adaptable a cualquier organización que maneje stock y control de productos.</p>
 
     <!-- Sección de Gestión -->
     <div class="management-section">
@@ -147,6 +73,97 @@
             <!-- Productos se agregarán aquí -->
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Sección de Estadísticas -->
+    <div class="stats-section">
+      <h3>Estadísticas y Gráficos</h3>
+
+      <!-- Estadísticas Detalladas -->
+      <div style="text-align: center; margin: 20px 0;">
+        <button id="toggle-detailed-stats" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Ver Todas las Estadísticas</button>
+      </div>
+      <div id="detailed-stats-container" style="display: block; margin-top: 20px; margin-bottom: 40px;">
+        <div class="detailed-stats">
+          <div class="stat-group">
+            <h4>Total de Productos</h4>
+            <p id="stats-total">0</p>
+          </div>
+          <div class="stat-group">
+            <h4>Valor Total del Inventario</h4>
+            <p id="stats-value">$0</p>
+          </div>
+          <div class="stat-group">
+            <h4>Productos con Bajo Stock</h4>
+            <p id="stats-low-stock">0</p>
+          </div>
+          <div class="stat-group">
+            <h4>Producto con Mayor Valor</h4>
+            <p id="stats-top-value-product">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Categoría con Mayor Valor</h4>
+            <p id="stats-top-value-category">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Promedio Precio por Categoría</h4>
+            <p id="stats-avg-price-category">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Valor Movimientos Último Mes</h4>
+            <p id="stats-monthly-movements">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Productos sin Stock</h4>
+            <p id="stats-critical-stock">Cargando...</p>
+          </div>
+          <div class="stat-group">
+            <h4>Proveedor con Más Productos</h4>
+            <p id="stats-top-supplier">Cargando...</p>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border: none; height: 2px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); margin: 40px 0;">
+
+      <!-- Gráficos -->
+      <div class="chart-sections">
+        <div class="chart-section">
+          <button id="toggle-category-chart">Ver Gráfico de Categorías</button>
+          <div id="category-chart-container" style="display: block; margin: 10px auto;">
+            <canvas id="categoryChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+        <div class="chart-section">
+          <button id="toggle-stock-chart">Ver Gráfico de Niveles de Stock</button>
+          <div id="stock-chart-container" style="display: block; margin: 10px auto;">
+            <canvas id="stockChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+        <div class="chart-section">
+          <button id="toggle-value-chart">Ver Gráfico de Valor por Producto</button>
+          <div id="value-chart-container" style="display: block; margin: 10px auto;">
+            <canvas id="valueChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+        <div class="chart-section">
+          <button id="toggle-demand-chart">Ver Gráfico de Demanda Temporal</button>
+          <div id="demand-chart-container" style="display: block; margin: 10px auto;">
+            <div class="demand-controls" style="margin-bottom: 15px; text-align: center;">
+              <label style="font-weight: 600; margin-right: 10px;">Producto:</label>
+              <select id="demand-product-filter" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-right: 20px;">
+                <option value="">Seleccionar producto</option>
+              </select>
+              <label style="font-weight: 600; margin-right: 10px;">Período:</label>
+              <button class="time-range-btn active" data-months="6">6 Meses</button>
+              <button class="time-range-btn" data-months="12">12 Meses</button>
+              <button class="time-range-btn" data-months="18">18 Meses</button>
+              <button class="time-range-btn" data-months="24">24 Meses</button>
+            </div>
+            <canvas id="demandChart" width="900" height="450"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -248,7 +265,7 @@
           <input type="number" id="sale-price" placeholder="Precio de Venta" step="0.01" min="0" required>
           <input type="number" id="initial-stock" placeholder="Stock Inicial" min="0" required>
           <input type="text" id="unit" placeholder="Unidad (ej. unidades, kg)" required>
-          <input type="number" id="low-stock-threshold" placeholder="Umbral Bajo Stock" min="0" value="10">
+          <input type="number" id="low-stock-threshold" placeholder="Alerta de stock bajo (ej: 5 kg)" min="0">
           <div style="display: flex; justify-content: center; gap: 10px;">
             <button type="submit" id="submit-product-btn">Agregar Producto</button>
             <button type="button" id="cancel-product">Cancelar</button>
@@ -260,8 +277,8 @@
     <!-- Sección de Historial de Movimientos -->
     <div class="movements-section">
       <h3>Historial de Movimientos</h3>
-      <button id="toggle-movements">Ver Historial de Movimientos</button>
-      <div id="movements-container" style="display: none; margin-top: 20px;">
+      <button id="toggle-movements">Ocultar Historial de Movimientos</button>
+      <div id="movements-container" style="display: block; margin-top: 20px;">
         <!-- Filtros para movimientos -->
         <div class="filters" style="margin-bottom: 20px; display: flex; gap: 25px; flex-wrap: wrap; align-items: center; justify-content: center;">
           <div style="display: flex; flex-direction: column; align-items: center;">
@@ -311,6 +328,66 @@
     </div>
 
     <p style="text-align: center; margin-top: 30px;"><a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a></p>
+  </div>
+
+  <!-- Modal de Tutorial -->
+  <div id="tutorial-modal" class="modal" style="display: block;">
+    <div class="modal-content tutorial-modal">
+      <span id="tutorial-close" class="close">&times;</span>
+      <h2>Bienvenido al Sistema de Gestión de Inventario</h2>
+      <div class="tutorial-intro">
+        <p><strong>Este demo está basado en un restaurante,</strong> pero el sistema se puede adaptar fácilmente a cualquier tipo de emprendimiento o negocio que maneje inventarios.</p>
+      </div>
+      <div class="tutorial-slider-container">
+        <button class="slider-arrow slider-arrow-left" id="prev-step">‹</button>
+        <div class="tutorial-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Agregar Productos</h3>
+              <p>Registra nuevos productos en el inventario especificando nombre, categoría, proveedor, precio y stock inicial.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Gestionar Categorías y Proveedores</h3>
+              <p>Crea categorías para organizar productos y registra proveedores para rastrear el origen de los items.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Registrar Movimientos</h3>
+              <p>Registra entradas (compras) y salidas (ventas/consumo) para mantener el stock actualizado.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Filtrar y Buscar</h3>
+              <p>Utiliza los filtros por categoría, proveedor, stock y búsqueda por nombre para encontrar productos rápidamente.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h3>Ver Estadísticas y Gráficos</h3>
+              <p>Revisa estadísticas detalladas y gráficos para analizar el rendimiento del inventario. Incluye análisis de demanda temporal.</p>
+            </div>
+          </div>
+        </div>
+        <button class="slider-arrow slider-arrow-right" id="next-step">›</button>
+      </div>
+      <div class="slider-indicators">
+        <span class="indicator active" data-step="0"></span>
+        <span class="indicator" data-step="1"></span>
+        <span class="indicator" data-step="2"></span>
+        <span class="indicator" data-step="3"></span>
+        <span class="indicator" data-step="4"></span>
+      </div>
+      <button id="start-demo" class="start-demo-btn">Comenzar Demo</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
