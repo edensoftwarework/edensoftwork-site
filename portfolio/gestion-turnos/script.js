@@ -84,6 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Opening tutorial modal');
             tutorialModal.style.display = 'flex';
             document.body.classList.add('tutorial-active');
+            // Initialize: hide prev arrow on first step
+            prevStepBtn.style.display = 'none';
         // }
     }
 
@@ -100,6 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
         indicators.forEach((indicator, index) => {
             indicator.classList.toggle('active', index === currentStep);
         });
+        
+        // Hide/show arrows based on position
+        if (currentStep === 0) {
+            prevStepBtn.style.display = 'none';
+        } else {
+            prevStepBtn.style.display = 'flex';
+        }
+        
+        if (currentStep === steps.length - 1) {
+            nextStepBtn.style.display = 'none';
+        } else {
+            nextStepBtn.style.display = 'flex';
+        }
     }
 
     function nextStep() {

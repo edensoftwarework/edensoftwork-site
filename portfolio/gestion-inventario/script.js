@@ -1374,7 +1374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.style.display = 'none';
 
     // Agregar blur al cargar página con tutorial abierto
-    if (tutorialModal && tutorialModal.style.display === 'block') {
+    if (tutorialModal && (tutorialModal.style.display === 'block' || tutorialModal.style.display === 'flex')) {
         document.body.classList.add('tutorial-active');
     }
 
@@ -1421,10 +1421,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-        if (tutorialModal && tutorialModal.style.display === 'block') {
+        if (tutorialModal && (tutorialModal.style.display === 'block' || tutorialModal.style.display === 'flex')) {
             if (e.key === 'ArrowLeft' && currentStep > 0) {
+                e.preventDefault();
                 showStep(currentStep - 1);
             } else if (e.key === 'ArrowRight' && currentStep < steps.length - 1) {
+                e.preventDefault();
                 showStep(currentStep + 1);
             }
         }
@@ -1443,7 +1445,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cerrar modal con tecla Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            if (tutorialModal && tutorialModal.style.display === 'block') {
+            if (tutorialModal && (tutorialModal.style.display === 'block' || tutorialModal.style.display === 'flex')) {
+                e.preventDefault();
                 tutorialModal.style.display = 'none';
                 document.body.classList.remove('tutorial-active');
             }

@@ -73,7 +73,7 @@ button:hover {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
 }
 .stats-section h3 {
   color: #667eea;
@@ -247,7 +247,7 @@ canvas {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
 }
 .management-section h3 {
   color: #667eea;
@@ -273,7 +273,7 @@ canvas {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
 }
 .inventory-section h3 {
   color: #667eea;
@@ -299,7 +299,7 @@ canvas {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
 }
 .movements-section h3 {
   color: #667eea;
@@ -596,174 +596,309 @@ tr:last-child td:last-child {
 .modal {
   display: none;
   position: fixed;
-  z-index: 100;
+  z-index: 2000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.modal[style*="display: flex"],
+.modal[style*="display: block"] {
+  display: flex !important;
+}
+
+.tutorial-modal.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 700px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  top: auto;
+  left: auto;
+  right: auto;
+  transform: none;
+  max-height: none;
+  border: none;
+}
+
+.tutorial-modal.modal-content h2 {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+}
+
+.tutorial-modal.modal-content .step-content h3 {
+  background: none;
+  color: #667eea;
+  padding: 0;
+  margin: 0 0 15px 0;
+  border-radius: 0;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: white;
+  font-size: 35px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease;
+  line-height: 1;
+}
+
+.close:hover {
+  transform: scale(1.2);
 }
 
 .tutorial-intro {
-  background: #e0d5ff;
-  color: #000000;
-  padding: 20px 30px;
-  border-radius: 15px;
-  margin-bottom: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 0;
+  margin-bottom: 0;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: none;
 }
+
+.tutorial-intro h2 {
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+}
+
 .tutorial-intro p {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 16px;
   line-height: 1.6;
-  color: #000000;
+  color: white !important;
   opacity: 1;
 }
-.tutorial-intro strong {
-  font-weight: 700;
+
+.tutorial-intro .underline {
   text-decoration: underline;
-  color: #000000;
+  text-decoration-color: white;
+  color: white !important;
+  font-weight: 700;
 }
+
 .tutorial-slider-container {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
+  gap: 0;
+  margin-bottom: 0;
+  padding: 40px 80px;
+  min-height: 280px;
+  justify-content: center;
 }
+
 .tutorial-steps {
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
-  min-height: 150px;
+  min-height: auto;
+  width: 100%;
 }
+
 .step {
   background: white;
   padding: 0;
-  border-radius: 15px;
-  border: 2px solid #e0e7ff;
+  border-radius: 0;
+  border: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: none;
   display: none;
-  overflow: hidden;
+  overflow: visible;
   opacity: 0;
   transform: translateX(20px);
+  text-align: center;
+  animation: fadeSlide 0.4s ease;
 }
+
 .step.active {
-  display: flex;
+  display: block;
   opacity: 1;
   transform: translateX(0);
 }
+
 .slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  font-size: 2rem;
+  font-size: 28px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   flex-shrink: 0;
+  z-index: 10;
 }
+
 .slider-arrow:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
+
 .slider-arrow:active {
-  transform: scale(0.95);
+  transform: translateY(-50%) scale(0.95);
 }
+
+.slider-arrow-left {
+  left: 20px;
+}
+
+.slider-arrow-right {
+  right: 20px;
+}
+
 .slider-indicators {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
-  margin-top: -25px;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding: 20px;
+  background: #f8f9fa;
 }
+
 .indicator {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #e0e7ff;
+  background: #cbd5e0;
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 .indicator.active {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   width: 30px;
   border-radius: 6px;
 }
+
 .indicator:hover {
-  background: #c7bfff;
+  background: #a0aec0;
 }
+
 .step-number {
+  width: 50px;
+  height: 50px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-size: 2rem;
-  font-weight: 700;
-  width: 80px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
   flex-shrink: 0;
 }
+
 .step-content {
-  padding: 20px 25px;
+  padding: 0;
   flex: 1;
 }
+
 .step-content h3 {
-  color: #000000;
+  color: #667eea;
   padding: 0;
-  margin: 0 0 8px 0;
-  font-size: 1.7rem;
-  font-weight: 700;
+  margin: 0 0 15px 0;
+  font-size: 24px;
+  font-weight: 600;
   text-align: center;
 }
+
 .step-content p {
   margin: 0;
   color: #555;
-  line-height: 1.5;
-  font-size: 1.1rem;
+  line-height: 1.6;
+  font-size: 16px;
 }
+
 .start-demo-btn {
-  padding: 15px 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(90deg, #5a67d8 0%, #4c51bf 50%, #5a67d8 100%);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 0;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 18px;
   font-weight: 600;
-  margin: 30px auto 0;
+  margin: 0;
   display: block;
   transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: none;
 }
+
 .start-demo-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+  background: linear-gradient(90deg, #4c51bf 0%, #3b3f8a 50%, #4c51bf 100%);
+  transform: none;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .modal-content p {
   color: #555;
   line-height: 1.6;
   margin: 0;
 }
-.close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.close:hover {
-  color: #aaa;
-}
+
 .message-modal {
   display: none;
   position: fixed;
