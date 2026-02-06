@@ -24,6 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const clientTime = document.getElementById('client-time');
     const clientNotes = document.getElementById('client-notes');
 
+    // Availability checker
+    const availabilityDate = document.getElementById('availability-date');
+    const checkAvailabilityBtn = document.getElementById('check-availability');
+    const availabilityResults = document.getElementById('availability-results');
+    
+    // Set today's date as default for availability checker
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    if (availabilityDate) {
+        availabilityDate.value = todayStr;
+    }
+
     // Pending appointments
     const pendingList = document.getElementById('pending-appointments-list');
 
@@ -52,7 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const editEndTime = document.getElementById('edit-end-time');
     const cancelEdit = document.getElementById('cancel-edit');
     const editClose = document.getElementById('edit-close');
+    const adminService = document.getElementById('admin-service');
     let currentAppt = null;
+    
+    // Service prices
+    const servicePrices = {
+        'Corte de Cabello': 12000,
+        'Corte y Barba': 18000,
+        'Coloración': 35000,
+        'Alisado': 50000,
+        'Tratamiento Capilar': 28000
+    };
 
     // Tutorial functionality
     function showTutorial() {
@@ -205,6 +227,96 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPendingAppointments();
     });
 
+    // Availability checker
+    checkAvailabilityBtn.addEventListener('click', () => {
+        const selectedDate = availabilityDate.value;
+        
+        if (!selectedDate) {
+            showMessage('Por favor selecciona una fecha para verificar disponibilidad.');
+            return;
+        }
+        
+        const dateObj = new Date(selectedDate + 'T00:00:00');
+        const today = new Date(new Date().toDateString());
+        
+        if (dateObj < today) {
+            showMessage('No puedes verificar disponibilidad de fechas pasadas.');
+            return;
+        }
+        
+        showAvailability(selectedDate);
+    });
+
+    function showAvailability(dateStr) {
+        const dayAppointments = appointments.filter(a => a.date === dateStr && a.status === 'confirmed');
+        
+        // Generate time slots from 8:00 to 21:30 (last slot at 21:30)
+        const timeSlots = [];
+        for (let hour = 8; hour < 22; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                timeSlots.push(time);
+            }
+        }
+        
+        // Check which slots are available
+        const slotsStatus = timeSlots.map(time => {
+            const isOccupied = dayAppointments.some(appt => {
+                return time >= appt.startTime && time < appt.endTime;
+            });
+            
+            return {
+                time: time,
+                available: !isOccupied
+            };
+        });
+        
+        // Format date for display
+        const dateObj = new Date(dateStr + 'T00:00:00');
+        const formattedDate = dateObj.toLocaleDateString('es-AR', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Render availability
+        let html = `
+            <div class="availability-header">
+                <h4>Disponibilidad para ${formattedDate}</h4>
+                <p>${dayAppointments.length} turno${dayAppointments.length !== 1 ? 's' : ''} confirmado${dayAppointments.length !== 1 ? 's' : ''}</p>
+            </div>
+            <div class="time-slots-grid">
+        `;
+        
+        slotsStatus.forEach(slot => {
+            const className = slot.available ? 'available' : 'occupied';
+            const icon = slot.available ? '✓' : '✗';
+            html += `
+                <div class="time-slot ${className}" ${slot.available ? `onclick="document.getElementById('client-time').value='${slot.time}'; document.getElementById('client-date').value='${dateStr}'; window.scrollTo({top: 0, behavior: 'smooth'});"` : ''}>
+                    ${icon} ${slot.time}
+                </div>
+            `;
+        });
+        
+        html += `
+            </div>
+            <div class="availability-legend">
+                <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>Disponible (haz clic para seleccionar)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color occupied"></div>
+                    <span>Ocupado</span>
+                </div>
+            </div>
+        `;
+        
+        availabilityResults.innerHTML = html;
+        availabilityResults.classList.add('show');
+    }
+
     // Render pending appointments for admin
     function renderPendingAppointments() {
         const pending = appointments.filter(a => a.status === 'pending');
@@ -266,11 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function saveAppointments() {
-      localStorage.setItem('appointments', JSON.stringify(appointments));
-    }
-
-    function saveAppointments() {
-      localStorage.setItem('appointments', JSON.stringify(appointments));
+      // Only save user appointments (not demo appointments)
+      const userAppointments = appointments.filter(appt => !appt.isDemo);
+      localStorage.setItem('appointments', JSON.stringify(userAppointments));
     }
 
     editForm.addEventListener('submit', (e) => {
@@ -345,15 +455,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageClose = document.querySelector('.message-close');
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+    
+    // Function to generate demo appointments with relative dates
+    function generateDemoAppointments() {
+        const today = new Date();
+        const demoData = [
+            // Confirmed appointments
+            { client: 'Juan Pérez', service: 'Corte de Cabello', dayOffset: 0, startTime: '10:00', endTime: '10:30', status: 'confirmed' },
+            { client: 'María García', service: 'Coloración', dayOffset: 0, startTime: '14:00', endTime: '15:30', status: 'confirmed' },
+            { client: 'Carlos López', service: 'Corte y Barba', dayOffset: 1, startTime: '09:00', endTime: '09:45', status: 'confirmed' },
+            { client: 'Ana Martínez', service: 'Tratamiento Capilar', dayOffset: 1, startTime: '16:00', endTime: '17:00', status: 'confirmed' },
+            { client: 'Roberto Silva', service: 'Corte de Cabello', dayOffset: 2, startTime: '11:00', endTime: '11:30', status: 'confirmed' },
+            { client: 'Laura Fernández', service: 'Alisado', dayOffset: 2, startTime: '15:00', endTime: '17:00', status: 'confirmed' },
+            { client: 'Diego Romero', service: 'Corte y Barba', dayOffset: 3, startTime: '10:30', endTime: '11:15', status: 'confirmed' },
+            { client: 'Sofía Morales', service: 'Coloración', dayOffset: 4, startTime: '13:00', endTime: '14:30', status: 'confirmed' },
+            { client: 'Martín González', service: 'Corte de Cabello', dayOffset: 5, startTime: '09:30', endTime: '10:00', status: 'confirmed' },
+            { client: 'Valentina Ruiz', service: 'Tratamiento Capilar', dayOffset: 6, startTime: '17:00', endTime: '18:00', status: 'confirmed' },
+            // Pending appointments (with requestedDaysAgo for relative requestedAt date)
+            { client: 'Lucas Díaz', phone: '11-2345-6789', service: 'Corte de Cabello', dayOffset: 3, startTime: '15:00', endTime: '15:30', status: 'pending', requestedDaysAgo: 2 },
+            { client: 'Camila Torres', phone: '11-3456-7890', service: 'Alisado', dayOffset: 5, startTime: '10:00', endTime: '12:00', status: 'pending', requestedDaysAgo: 1 },
+        ];
+        
+        return demoData.map(demo => {
+            const appointmentDate = new Date(today);
+            appointmentDate.setDate(today.getDate() + demo.dayOffset);
+            const dateStr = appointmentDate.toISOString().slice(0, 10);
+            
+            const appointment = {
+                client: demo.client,
+                service: demo.service,
+                date: dateStr,
+                startTime: demo.startTime,
+                endTime: demo.endTime,
+                status: demo.status,
+                isDemo: true
+            };
+            
+            // Add phone for pending appointments
+            if (demo.phone) {
+                appointment.phone = demo.phone;
+            }
+            
+            // Calculate requestedAt date for pending appointments
+            if (demo.status === 'pending' && demo.requestedDaysAgo !== undefined) {
+                const requestedDate = new Date(today);
+                requestedDate.setDate(today.getDate() - demo.requestedDaysAgo);
+                requestedDate.setHours(14, 30, 0, 0); // Set to 14:30 as example time
+                appointment.requestedAt = requestedDate.toISOString();
+            }
+            
+            return appointment;
+        });
+    }
+    
+    // Load appointments from localStorage
+    let userAppointments = JSON.parse(localStorage.getItem('appointments')) || [];
     
     // Migrate old appointments to include status
-    appointments = appointments.map(appt => {
+    userAppointments = userAppointments.map(appt => {
         if (!appt.status) {
             appt.status = 'confirmed';
         }
         return appt;
     });
+    
+    // Combine demo appointments with user appointments
+    const demoAppointments = generateDemoAppointments();
+    let appointments = [...demoAppointments, ...userAppointments];
     
     let filteredAppointments = [];
     let editingIndex = null;
@@ -380,66 +548,70 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       appointmentsList.style.display = 'block';
-      const ul = appointmentsList.querySelector('ul') || document.createElement('ul');
-      ul.innerHTML = '';
+      
       if (list.length === 0) {
-        appointmentsList.innerHTML = '<h2>Turnos Agendados</h2><p>No hay turnos que coincidan con la búsqueda.</p>';
+        appointmentsList.innerHTML = '<p class="no-appointments">No hay turnos que coincidan con la búsqueda.</p>';
         return;
       }
-      list.forEach((appt, index) => {
-        const li = document.createElement('li');
-        li.className = 'appointment';
-        li.innerHTML = `
-          <span>${appt.client} - ${appt.date} ${appt.startTime} - ${appt.endTime}</span>
+      
+      // Create table
+      const table = document.createElement('table');
+      table.className = 'appointments-table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Horario</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      
+      const tbody = table.querySelector('tbody');
+      
+      list.forEach((appt) => {
+        const tr = document.createElement('tr');
+        const isPast = new Date(appt.date + 'T00:00:00') < new Date(new Date().toDateString());
+        if (isPast) tr.classList.add('past-appointment-row');
+        
+        tr.innerHTML = `
+          <td>${appt.client}</td>
+          <td>${appt.date}</td>
+          <td>${appt.startTime} - ${appt.endTime}</td>
+          <td class="actions-cell">
+            ${!isPast ? '<button class="action-btn edit-action" title="Editar">✏️</button>' : ''}
+            <button class="action-btn delete-action" title="Eliminar">🗑️</button>
+          </td>
         `;
-        li.addEventListener('click', (e) => {
-          e.stopPropagation();
-          // Ocultar menú anterior si existe
-          const existingMenu = document.querySelector('.action-menu');
-          if (existingMenu) existingMenu.remove();
-          // Crear menú
-          const menu = document.createElement('div');
-          menu.className = 'action-menu';
-          menu.style.left = e.clientX + 'px';
-          menu.style.top = e.clientY + 'px';
-          const isPast = new Date(appt.date + 'T00:00:00') < new Date(new Date().toDateString());
-          menu.innerHTML = `
-            ${isPast ? '' : '<button id="edit-btn">Editar</button>'}
-            <button id="delete-btn">Eliminar</button>
-          `;
-          document.body.appendChild(menu);
-          menu.style.display = 'block';
-          // Event listeners
-          if (!isPast) {
-            menu.querySelector('#edit-btn').addEventListener('click', () => {
-              currentAppt = appt;
-              editClient.value = appt.client;
-              editDate.value = appt.date;
-              editStartTime.value = appt.startTime;
-              editEndTime.value = appt.endTime;
-              editModal.style.display = 'block';
-              menu.remove();
-            });
-          }
-          menu.querySelector('#delete-btn').addEventListener('click', () => {
-            if (confirm('¿Estás seguro de que quieres eliminar este turno?')) {
-              deleteAppointment(appointments.indexOf(appt));
-            }
-            menu.remove();
+        
+        // Edit button
+        if (!isPast) {
+          const editBtn = tr.querySelector('.edit-action');
+          editBtn.addEventListener('click', () => {
+            currentAppt = appt;
+            editClient.value = appt.client;
+            editDate.value = appt.date;
+            editStartTime.value = appt.startTime;
+            editEndTime.value = appt.endTime;
+            editModal.style.display = 'block';
           });
-          // Cerrar al hacer clic fuera
-          const closeMenu = (event) => {
-            if (!menu.contains(event.target)) {
-              menu.remove();
-              document.removeEventListener('click', closeMenu);
-            }
-          };
-          setTimeout(() => document.addEventListener('click', closeMenu), 0);
+        }
+        
+        // Delete button
+        const deleteBtn = tr.querySelector('.delete-action');
+        deleteBtn.addEventListener('click', () => {
+          if (confirm('¿Estás seguro de que quieres eliminar este turno?')) {
+            deleteAppointment(appointments.indexOf(appt));
+          }
         });
-        ul.appendChild(li);
+        
+        tbody.appendChild(tr);
       });
-      appointmentsList.innerHTML = '<h2>Turnos Agendados</h2>';
-      appointmentsList.appendChild(ul);
+      
+      appointmentsList.innerHTML = '';
+      appointmentsList.appendChild(table);
     }
 
     function updateStats() {
@@ -456,9 +628,50 @@ document.addEventListener('DOMContentLoaded', () => {
       const weekStartStr = weekStart.toISOString().slice(0, 10);
       const weekEndStr = weekEnd.toISOString().slice(0, 10);
       const weekCount = confirmedAppointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr).length;
-      statsTotal.textContent = `Total de turnos: ${total}`;
-      statsToday.textContent = `Turnos hoy: ${todayCount}`;
-      statsWeek.textContent = `Turnos esta semana: ${weekCount}`;
+      
+      // Calculate revenue
+      let totalRevenue = 0;
+      const serviceCount = {};
+      
+      confirmedAppointments.forEach(appt => {
+        const service = appt.service || 'Corte de Cabello';
+        const price = servicePrices[service] || 0;
+        totalRevenue += price;
+        serviceCount[service] = (serviceCount[service] || 0) + 1;
+      });
+      
+      // Update stats
+      document.getElementById('stats-total').textContent = total;
+      document.getElementById('stats-today').textContent = todayCount;
+      document.getElementById('stats-week').textContent = weekCount;
+      document.getElementById('stats-revenue').textContent = `$${totalRevenue.toLocaleString('es-AR')}`;
+      
+      // Render services breakdown
+      const servicesBreakdown = document.getElementById('services-breakdown');
+      if (Object.keys(serviceCount).length === 0) {
+        servicesBreakdown.innerHTML = '<p class="no-services">No hay servicios registrados</p>';
+      } else {
+        let html = '';
+        Object.entries(serviceCount).sort((a, b) => b[1] - a[1]).forEach(([service, count]) => {
+          const revenue = count * servicePrices[service];
+          const icons = {
+            'Corte de Cabello': '✂️',
+            'Corte y Barba': '💈',
+            'Coloración': '🎨',
+            'Alisado': '🌊',
+            'Tratamiento Capilar': '💆'
+          };
+          html += `
+            <div class="service-item">
+              <span class="service-icon">${icons[service] || '✨'}</span>
+              <span class="service-name">${service}</span>
+              <span class="service-count">${count} vez${count !== 1 ? 'es' : ''}</span>
+              <span class="service-revenue">$${revenue.toLocaleString('es-AR')}</span>
+            </div>
+          `;
+        });
+        servicesBreakdown.innerHTML = html;
+      }
     }
 
     function renderCalendar() {
@@ -690,6 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const client = document.getElementById('client').value;
+      const service = adminService.value;
       const date = document.getElementById('date').value;
       const startTime = document.getElementById('start-time').value;
       const endTime = document.getElementById('end-time').value;
@@ -714,11 +928,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       if (editingIndex !== null) {
-        appointments[editingIndex] = { client, date, startTime, endTime, status: 'confirmed' };
+        appointments[editingIndex] = { client, service, date, startTime, endTime, status: 'confirmed' };
         editingIndex = null;
         document.getElementById('submit-btn').textContent = 'Agregar Turno';
       } else {
-        appointments.push({ client, date, startTime, endTime, status: 'confirmed' });
+        appointments.push({ client, service, date, startTime, endTime, status: 'confirmed' });
       }
       saveAppointments();
       form.reset();
@@ -773,6 +987,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStats();
     renderCalendar();
     filterAppointments('all');
+    
+    // Show availability for today by default in client mode
+    if (availabilityDate && availabilityDate.value) {
+        showAvailability(availabilityDate.value);
+    }
 
     // Global keyboard navigation for tutorial
     document.addEventListener('keydown', (e) => {

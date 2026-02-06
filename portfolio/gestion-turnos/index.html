@@ -121,6 +121,16 @@
         <button type="submit" class="btn-primary">Solicitar Turno</button>
       </form>
 
+      <div class="availability-section">
+        <h3>Ver Disponibilidad</h3>
+        <div class="availability-controls">
+          <label for="availability-date">Selecciona una fecha:</label>
+          <input type="date" id="availability-date">
+          <button type="button" id="check-availability" class="btn-secondary">Verificar Horarios</button>
+        </div>
+        <div id="availability-results" class="availability-results"></div>
+      </div>
+
       <div class="widget-info">
         <p>✓ Tu solicitud será revisada por el peluquero</p>
         <p>✓ Recibirás confirmación una vez aprobada</p>
@@ -138,46 +148,103 @@
         </div>
       </div>
 
-    <form id="appointment-form">
-      <input type="text" id="client" placeholder="Nombre del Cliente" required>
-      <div class="date-time-row">
-        <div>
-          <label for="date">Fecha turno</label>
-          <input type="date" id="date" required>
+      <!-- Add Appointment Section -->
+      <div class="admin-section add-appointment-section">
+        <h2>➕ Agregar Nuevo Turno</h2>
+        <form id="appointment-form">
+          <div class="form-row-2">
+            <input type="text" id="client" placeholder="Nombre del Cliente" required>
+            <select id="admin-service" required>
+              <option value="">Seleccionar servicio</option>
+              <option value="Corte de Cabello">Corte de Cabello</option>
+              <option value="Corte y Barba">Corte y Barba</option>
+              <option value="Coloración">Coloración</option>
+              <option value="Alisado">Alisado</option>
+              <option value="Tratamiento Capilar">Tratamiento Capilar</option>
+            </select>
+          </div>
+          <div class="date-time-row">
+            <div>
+              <label for="date">Fecha turno</label>
+              <input type="date" id="date" required>
+            </div>
+            <div>
+              <label for="start-time">Horario de inicio turno</label>
+              <input type="time" id="start-time" min="08:00" max="22:00" required>
+            </div>
+            <div>
+              <label for="end-time">Horario de fin turno</label>
+              <input type="time" id="end-time" min="08:00" max="22:00" required>
+            </div>
+          </div>
+          <button type="submit" id="submit-btn">Agregar Turno</button>
+        </form>
+      </div>
+
+      <!-- Statistics Section -->
+      <div class="admin-section stats-section">
+        <h2>📊 Estadísticas</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+              <div class="stat-label">Total de Turnos</div>
+              <div class="stat-value" id="stats-total">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📆</div>
+            <div class="stat-content">
+              <div class="stat-label">Turnos Hoy</div>
+              <div class="stat-value" id="stats-today">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <div class="stat-label">Esta Semana</div>
+              <div class="stat-value" id="stats-week">0</div>
+            </div>
+          </div>
+          <div class="stat-card highlight">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <div class="stat-label">Ganancias</div>
+              <div class="stat-value" id="stats-revenue">$0</div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label for="start-time">Horario de inicio turno</label>
-          <input type="time" id="start-time" min="08:00" max="22:00" required>
-        </div>
-        <div>
-          <label for="end-time">Horario de fin turno</label>
-          <input type="time" id="end-time" min="08:00" max="22:00" required>
+        <div class="services-stats">
+          <h3>Servicios Realizados</h3>
+          <div id="services-breakdown" class="services-list"></div>
         </div>
       </div>
-      <button type="submit" id="submit-btn">Agregar Turno</button>
-    </form>
-    <div class="stats">
-      <p id="stats-total">Total de turnos: 0</p>
-      <p id="stats-today">Turnos hoy: 0</p>
-      <p id="stats-week">Turnos esta semana: 0</p>
-    </div>
-    <div class="calendar">
-      <div class="calendar-header">
-        <button id="prev-month">&lt;</button>
-        <h2 id="calendar-title">Calendario de Turnos</h2>
-        <button id="next-month">&gt;</button>
+
+      <!-- Calendar Section -->
+      <div class="admin-section calendar-section">
+        <div class="calendar">
+          <div class="calendar-header">
+            <button id="prev-month">&lt;</button>
+            <h2 id="calendar-title">Calendario de Turnos</h2>
+            <button id="next-month">&gt;</button>
+          </div>
+          <div id="calendar"></div>
+        </div>
       </div>
-      <div id="calendar"></div>
-    </div>
-    <div class="filters">
-      <input type="text" id="search" placeholder="Buscar por cliente">
-      <button id="filter-today">Hoy</button>
-      <button id="filter-week">Esta Semana</button>
-      <button id="filter-all">Todos</button>
-    </div>
-    <div class="appointments" id="appointments-list">
-      <h2>Turnos Agendados</h2>
-      <!-- Citas se agregarán aquí -->
+
+      <!-- Appointments List Section -->
+      <div class="admin-section appointments-section">
+        <h2>📅 Turnos Confirmados</h2>
+        <div class="filters">
+          <input type="text" id="search" placeholder="Buscar por cliente">
+          <button id="filter-today">Hoy</button>
+          <button id="filter-week">Esta Semana</button>
+          <button id="filter-all">Todos</button>
+        </div>
+        <div class="appointments" id="appointments-list">
+          <!-- Turnos se agregarán aquí como tabla -->
+        </div>
+      </div>
     </div>
     <div id="day-modal" class="modal">
       <div class="modal-content">
