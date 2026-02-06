@@ -9,10 +9,135 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Tutorial Modal -->
+  <div id="tutorial-modal" class="tutorial-modal">
+    <div class="tutorial-modal-content">
+      <span id="tutorial-close" class="tutorial-close-x">&times;</span>
+      <div class="tutorial-intro">
+        <h2>Bienvenido al Sistema de Gestión de Turnos</h2>
+        <p><strong><u>Aunque esta demo está ambientada en una peluquería,</u></strong> el sistema es adaptable a cualquier emprendimiento o negocio que requiera gestión de reserva de turnos.</p>
+      </div>
+      <div class="tutorial-slider-container">
+        <button class="slider-arrow slider-arrow-left" id="prev-step">‹</button>
+        <div class="tutorial-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Dos Modos de Uso</h3>
+              <p>Esta demo incluye dos interfaces: Modo Administrador (para el peluquero/dueño) y Modo Cliente (formulario de reservas online). Puedes alternar entre ambos en cualquier momento.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Modo Administrador</h3>
+              <p>Como administrador puedes gestionar todos los turnos, ver el calendario completo, confirmar solicitudes pendientes y tener control total del sistema.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Modo Cliente</h3>
+              <p>Los clientes ven un formulario simplificado donde pueden solicitar turnos viendo la disponibilidad en tiempo real. Sus solicitudes quedan en estado "pendiente".</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Sistema de Confirmación</h3>
+              <p>Las solicitudes de clientes aparecen en el Modo Administrador como "pendientes". El peluquero puede confirmarlas o rechazarlas desde su panel.</p>
+            </div>
+          </div>
+        </div>
+        <button class="slider-arrow slider-arrow-right" id="next-step">›</button>
+      </div>
+      <div class="slider-indicators">
+        <span class="indicator active" data-step="0"></span>
+        <span class="indicator" data-step="1"></span>
+        <span class="indicator" data-step="2"></span>
+        <span class="indicator" data-step="3"></span>
+      </div>
+      <button class="tutorial-close-btn" id="close-tutorial">Comenzar</button>
+    </div>
+  </div>
+
   <div class="container">
     <img src="logo_4.png" class="small-logo" alt="EDEN SoftWork Logo">
+    
     <h1>Sistema de Reservas de Turnos</h1>
-    <p>Sistema para agregar, visualizar y gestionar turnos. Ideal para clínicas, peluquerías y talleres.</p>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="admin">👨‍💼 Modo Administrador</button>
+      <button class="mode-btn" data-mode="client">👤 Modo Cliente</button>
+    </div>
+
+    <!-- Client Mode (Widget) -->
+    <div id="client-view" class="view-section" style="display: none;">
+      <div class="widget-header">
+        <h2>Reserva tu Turno en Peluquería StyleCut</h2>
+        <p>Selecciona el servicio, fecha y horario que prefieras</p>
+      </div>
+      
+      <form id="client-appointment-form">
+        <div class="form-group">
+          <label for="client-name">Tu Nombre Completo</label>
+          <input type="text" id="client-name" placeholder="Ej: María González" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="client-phone">Teléfono de Contacto</label>
+          <input type="tel" id="client-phone" placeholder="Ej: +54 11 1234-5678" required>
+        </div>
+
+        <div class="form-group">
+          <label for="service-select">Servicio</label>
+          <select id="service-select" required>
+            <option value="">Selecciona un servicio...</option>
+            <option value="Corte de Cabello">Corte de Cabello (30 min)</option>
+            <option value="Corte y Barba">Corte y Barba (45 min)</option>
+            <option value="Coloración">Coloración (90 min)</option>
+            <option value="Alisado">Alisado (120 min)</option>
+            <option value="Tratamiento Capilar">Tratamiento Capilar (60 min)</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="client-date">Fecha Deseada</label>
+            <input type="date" id="client-date" required>
+          </div>
+          <div class="form-group">
+            <label for="client-time">Horario Deseado</label>
+            <input type="time" id="client-time" min="08:00" max="22:00" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="client-notes">Notas Adicionales (Opcional)</label>
+          <textarea id="client-notes" rows="3" placeholder="Algún comentario especial..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Solicitar Turno</button>
+      </form>
+
+      <div class="widget-info">
+        <p>✓ Tu solicitud será revisada por el peluquero</p>
+        <p>✓ Recibirás confirmación una vez aprobada</p>
+        <p>✓ Horario de atención: Lunes a Sábado, 8:00 - 22:00</p>
+      </div>
+    </div>
+
+    <!-- Admin Mode -->
+    <div id="admin-view" class="view-section">
+      <!-- Pending Appointments Section -->
+      <div class="pending-section">
+        <h2>⏳ Solicitudes Pendientes</h2>
+        <div id="pending-appointments-list" class="pending-list">
+          <!-- Pending appointments will be added here -->
+        </div>
+      </div>
+
     <form id="appointment-form">
       <input type="text" id="client" placeholder="Nombre del Cliente" required>
       <div class="date-time-row">
@@ -89,14 +214,17 @@
         </form>
       </div>
     </div>
-    <div id="message-modal" class="message-modal">
-      <div class="message-content">
-        <span class="message-close">&times;</span>
-        <p id="message-text"></p>
-      </div>
-    </div>
+    </div><!-- Close admin-view -->
 
     <p style="text-align: center; margin-top: 30px;"><a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a></p>
+  </div>
+
+  <div id="message-modal" class="message-modal">
+    <div class="message-content">
+      <span class="message-close">&times;</span>
+      <p id="message-text"></p>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

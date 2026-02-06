@@ -1,4 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Tutorial elements
+    const tutorialModal = document.getElementById('tutorial-modal');
+    const closeTutorialBtn = document.getElementById('close-tutorial');
+    const closeTutorialX = document.getElementById('tutorial-close');
+    const prevStepBtn = document.getElementById('prev-step');
+    const nextStepBtn = document.getElementById('next-step');
+    const steps = document.querySelectorAll('.step');
+    const indicators = document.querySelectorAll('.indicator');
+    let currentStep = 0;
+
+    // Mode selector elements
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const clientView = document.getElementById('client-view');
+    const adminView = document.getElementById('admin-view');
+    let currentMode = 'admin';
+
+    // Client form elements
+    const clientForm = document.getElementById('client-appointment-form');
+    const clientName = document.getElementById('client-name');
+    const clientPhone = document.getElementById('client-phone');
+    const serviceSelect = document.getElementById('service-select');
+    const clientDate = document.getElementById('client-date');
+    const clientTime = document.getElementById('client-time');
+    const clientNotes = document.getElementById('client-notes');
+
+    // Pending appointments
+    const pendingList = document.getElementById('pending-appointments-list');
+
+    // Existing admin elements
     const form = document.getElementById('appointment-form');
     const appointmentsList = document.getElementById('appointments-list');
     const searchInput = document.getElementById('search');
@@ -24,6 +53,217 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelEdit = document.getElementById('cancel-edit');
     const editClose = document.getElementById('edit-close');
     let currentAppt = null;
+
+    // Tutorial functionality
+    function showTutorial() {
+        console.log('showTutorial called, tutorialCompleted:', localStorage.getItem('tutorialCompleted'));
+        // Temporarily always show tutorial for testing
+        // if (!localStorage.getItem('tutorialCompleted')) {
+            console.log('Opening tutorial modal');
+            tutorialModal.style.display = 'flex';
+            document.body.classList.add('tutorial-active');
+        // }
+    }
+
+    function closeTutorial() {
+        tutorialModal.style.display = 'none';
+        document.body.classList.remove('tutorial-active');
+        // localStorage.setItem('tutorialCompleted', 'true');
+    }
+
+    function updateStep() {
+        steps.forEach((step, index) => {
+            step.classList.toggle('active', index === currentStep);
+        });
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentStep);
+        });
+    }
+
+    function nextStep() {
+        if (currentStep < steps.length - 1) {
+            currentStep++;
+            updateStep();
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 0) {
+            currentStep--;
+            updateStep();
+        }
+    }
+
+    closeTutorialBtn.addEventListener('click', closeTutorial);
+    closeTutorialX.addEventListener('click', closeTutorial);
+    nextStepBtn.addEventListener('click', nextStep);
+    prevStepBtn.addEventListener('click', prevStep);
+
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            currentStep = index;
+            updateStep();
+        });
+    });
+
+    // Mode switching
+    function switchMode(mode) {
+        currentMode = mode;
+        modeBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+
+        if (mode === 'client') {
+            clientView.style.display = 'block';
+            adminView.style.display = 'none';
+        } else {
+            clientView.style.display = 'none';
+            adminView.style.display = 'block';
+        }
+    }
+
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchMode(btn.dataset.mode);
+        });
+    });
+
+    // Client form submission
+    clientForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const name = clientName.value.trim();
+        const phone = clientPhone.value.trim();
+        const service = serviceSelect.value;
+        const date = clientDate.value;
+        const time = clientTime.value;
+        const notes = clientNotes.value.trim();
+
+        if (!name || !phone || !service || !date || !time) {
+            showMessage('Por favor completa todos los campos obligatorios.');
+            return;
+        }
+
+        // Validate date is not in the past
+        if (new Date(date + 'T00:00:00') < new Date(new Date().toDateString())) {
+            showMessage('No puedes solicitar turnos en fechas pasadas.');
+            return;
+        }
+
+        // Get service duration
+        const serviceDurations = {
+            'Corte de Cabello': 30,
+            'Corte y Barba': 45,
+            'Coloración': 90,
+            'Alisado': 120,
+            'Tratamiento Capilar': 60
+        };
+        
+        const duration = serviceDurations[service];
+        const [hours, minutes] = time.split(':').map(Number);
+        const endDate = new Date();
+        endDate.setHours(hours, minutes + duration);
+        const endTime = endDate.toTimeString().slice(0, 5);
+
+        // Validate that appointment doesn't exceed 22:00
+        if (endTime > '22:00') {
+            showMessage('El turno excedería el horario de atención (hasta 22:00). Por favor elige un horario más temprano.');
+            return;
+        }
+
+        // Check for conflicts with confirmed appointments only
+        const confirmedAppointments = appointments.filter(a => 
+            a.date === date && a.status === 'confirmed'
+        );
+        const overlap = confirmedAppointments.some(a => 
+            (time < a.endTime && endTime > a.startTime)
+        );
+
+        if (overlap) {
+            showMessage('Lo sentimos, ese horario no está disponible. Por favor elige otro horario.');
+            return;
+        }
+
+        // Create pending appointment
+        const pendingAppointment = {
+            client: name,
+            phone: phone,
+            service: service,
+            date: date,
+            startTime: time,
+            endTime: endTime,
+            notes: notes,
+            status: 'pending',
+            requestedAt: new Date().toISOString()
+        };
+
+        appointments.push(pendingAppointment);
+        saveAppointments();
+        
+        showMessage('¡Solicitud enviada! El peluquero revisará tu solicitud y te confirmará el turno.');
+        clientForm.reset();
+        renderPendingAppointments();
+    });
+
+    // Render pending appointments for admin
+    function renderPendingAppointments() {
+        const pending = appointments.filter(a => a.status === 'pending');
+        
+        if (pending.length === 0) {
+            pendingList.innerHTML = '<div class="no-pending">No hay solicitudes pendientes</div>';
+            return;
+        }
+
+        pendingList.innerHTML = pending.map((appt, index) => `
+            <div class="pending-appointment">
+                <div class="pending-appointment-header">
+                    <div class="pending-client-info">
+                        <h4>${appt.client}</h4>
+                        <p>📞 ${appt.phone}</p>
+                    </div>
+                    <div class="pending-actions">
+                        <button class="btn-confirm" onclick="confirmAppointment(${appointments.indexOf(appt)})">
+                            ✓ Confirmar
+                        </button>
+                        <button class="btn-reject" onclick="rejectAppointment(${appointments.indexOf(appt)})">
+                            ✗ Rechazar
+                        </button>
+                    </div>
+                </div>
+                <div class="pending-details">
+                    <strong>Servicio:</strong> ${appt.service}<br>
+                    <strong>Fecha:</strong> ${appt.date}<br>
+                    <strong>Horario:</strong> ${appt.startTime} - ${appt.endTime}<br>
+                    ${appt.notes ? `<strong>Notas:</strong> ${appt.notes}<br>` : ''}
+                    <strong>Solicitado:</strong> ${new Date(appt.requestedAt).toLocaleString('es-AR')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Confirm appointment (make it global for onclick)
+    window.confirmAppointment = function(index) {
+        appointments[index].status = 'confirmed';
+        saveAppointments();
+        showMessage('Turno confirmado exitosamente.');
+        renderPendingAppointments();
+        updateStats();
+        renderCalendar();
+        renderAppointments();
+    };
+
+    // Reject appointment (make it global for onclick)
+    window.rejectAppointment = function(index) {
+        if (confirm('¿Estás seguro de que quieres rechazar esta solicitud?')) {
+            appointments.splice(index, 1);
+            saveAppointments();
+            showMessage('Solicitud rechazada.');
+            renderPendingAppointments();
+            updateStats();
+            renderCalendar();
+            renderAppointments();
+        }
+    };
 
     function saveAppointments() {
       localStorage.setItem('appointments', JSON.stringify(appointments));
@@ -56,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showMessage('Los turnos deben estar entre 08:00 y 22:00.');
         return;
       }
-      const dayAppointments = appointments.filter(a => a.date === date && a !== currentAppt);
+      const dayAppointments = appointments.filter(a => a.date === date && a !== currentAppt && a.status === 'confirmed');
       const overlap = dayAppointments.some(a => (startTime < a.endTime && endTime > a.startTime));
       if (overlap) {
         showMessage('Hay un conflicto de horario con otro turno.');
@@ -67,10 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
       currentAppt.date = date;
       currentAppt.startTime = startTime;
       currentAppt.endTime = endTime;
-      localStorage.setItem('appointments', JSON.stringify(appointments));
+      saveAppointments();
       updateStats();
       renderCalendar();
       renderAppointments();
+      renderPendingAppointments();
       // refresh day modal
       showDayAppointments(date);
       editModal.style.display = 'none';
@@ -105,6 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+    
+    // Migrate old appointments to include status
+    appointments = appointments.map(appt => {
+        if (!appt.status) {
+            appt.status = 'confirmed';
+        }
+        return appt;
+    });
+    
     let filteredAppointments = [];
     let editingIndex = null;
     let isFiltered = true;
@@ -195,8 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStats() {
       const now = new Date();
       const today = now.toISOString().slice(0, 10);
-      const total = appointments.filter(appt => appt.date >= today).length;
-      const todayCount = appointments.filter(appt => appt.date === today).length;
+      const confirmedAppointments = appointments.filter(appt => appt.status === 'confirmed');
+      const total = confirmedAppointments.filter(appt => appt.date >= today).length;
+      const todayCount = confirmedAppointments.filter(appt => appt.date === today).length;
       const weekStart = new Date(now);
       const dayOfWeek = now.getDay();
       weekStart.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
@@ -204,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
       weekEnd.setDate(weekStart.getDate() + 6);
       const weekStartStr = weekStart.toISOString().slice(0, 10);
       const weekEndStr = weekEnd.toISOString().slice(0, 10);
-      const weekCount = appointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr).length;
+      const weekCount = confirmedAppointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr).length;
       statsTotal.textContent = `Total de turnos: ${total}`;
       statsToday.textContent = `Turnos hoy: ${todayCount}`;
       statsWeek.textContent = `Turnos esta semana: ${weekCount}`;
@@ -241,12 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
         dayDiv.className = 'calendar-day';
         dayDiv.textContent = day;
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const hasAppointments = appointments.some(appt => appt.date === dateStr);
+        const confirmedAppointments = appointments.filter(appt => appt.status === 'confirmed');
+        const hasAppointments = confirmedAppointments.some(appt => appt.date === dateStr);
         const isPast = new Date(dateStr) < new Date(now.toDateString());
         const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         const isToday = dateStr === todayStr;
         if (isToday) {
-          const activeAppointments = appointments.filter(appt => appt.date === dateStr && new Date(`${dateStr}T${appt.endTime}`) > now);
+          const activeAppointments = confirmedAppointments.filter(appt => appt.date === dateStr && new Date(`${dateStr}T${appt.endTime}`) > now);
           if (activeAppointments.length > 0) {
             dayDiv.classList.add('today-active');
           } else if (hasAppointments) {
@@ -270,8 +522,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function filterAppointments(filter = 'all') {
       const now = new Date();
       const todayStr = now.toISOString().slice(0, 10);
+      const confirmedAppointments = appointments.filter(appt => appt.status === 'confirmed');
+      
       if (filter === 'today') {
-        filteredAppointments = appointments.filter(appt => appt.date === todayStr);
+        filteredAppointments = confirmedAppointments.filter(appt => appt.date === todayStr);
         isFiltered = true;
       } else if (filter === 'week') {
         const weekStart = new Date(now);
@@ -281,10 +535,10 @@ document.addEventListener('DOMContentLoaded', () => {
         weekEnd.setDate(weekStart.getDate() + 6);
         const weekStartStr = weekStart.toISOString().slice(0, 10);
         const weekEndStr = weekEnd.toISOString().slice(0, 10);
-        filteredAppointments = appointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr);
+        filteredAppointments = confirmedAppointments.filter(appt => appt.date >= weekStartStr && appt.date <= weekEndStr);
         isFiltered = true;
       } else {
-        filteredAppointments = appointments.filter(appt => appt.date >= todayStr);
+        filteredAppointments = confirmedAppointments.filter(appt => appt.date >= todayStr);
         isFiltered = true;
       }
       const searchTerm = searchInput.value.toLowerCase();
@@ -298,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!modalDate) {
         return;
       }
-      const dayAppointments = appointments.filter(appt => appt.date === dateStr).sort((a, b) => a.startTime.localeCompare(b.startTime));
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr && appt.status === 'confirmed').sort((a, b) => a.startTime.localeCompare(b.startTime));
       const date = new Date(dateStr + 'T00:00:00');
       const day = date.getDate();
       const month = date.getMonth() + 1;
@@ -405,7 +659,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (editModal.style.display === 'block') {
+        if (messageModal.style.display === 'block') {
+          messageModal.style.display = 'none';
+        } else if (editModal.style.display === 'block') {
           editModal.style.display = 'none';
         } else if (modal.style.display === 'block') {
           modal.style.display = 'none';
@@ -458,11 +714,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       if (editingIndex !== null) {
-        appointments[editingIndex] = { client, date, startTime, endTime };
+        appointments[editingIndex] = { client, date, startTime, endTime, status: 'confirmed' };
         editingIndex = null;
         document.getElementById('submit-btn').textContent = 'Agregar Turno';
       } else {
-        appointments.push({ client, date, startTime, endTime });
+        appointments.push({ client, date, startTime, endTime, status: 'confirmed' });
       }
       saveAppointments();
       form.reset();
@@ -512,6 +768,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Inicializar
+    showTutorial();
+    renderPendingAppointments();
     updateStats();
     renderCalendar();
+    filterAppointments('all');
+
+    // Global keyboard navigation for tutorial
+    document.addEventListener('keydown', (e) => {
+        console.log('Key pressed:', e.key, 'Modal display:', tutorialModal?.style.display);
+        if (tutorialModal && tutorialModal.style.display === 'flex') {
+            console.log('Inside tutorial modal, currentStep:', currentStep);
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Going to previous step');
+                prevStep();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Going to next step');
+                nextStep();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Closing tutorial');
+                closeTutorial();
+            }
+        }
+    });
     });
