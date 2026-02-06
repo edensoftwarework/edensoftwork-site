@@ -266,10 +266,15 @@ section {
   border: 1px solid #e9ecef;
 }
 .portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 30px;
   margin-top: 30px;
+}
+.portfolio-item {
+  flex: 0 1 calc(33.333% - 30px);
+  max-width: 350px;
 }
 .portfolio-item:hover {
   transform: translateY(-5px);

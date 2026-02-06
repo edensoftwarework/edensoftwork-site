@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema CRM - EDEN SoftWork</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <!-- Tutorial Modal -->
+  <div id="tutorial-modal" class="tutorial-modal">
+    <div class="tutorial-modal-content">
+      <span id="tutorial-close" class="tutorial-close-x">&times;</span>
+      <div class="tutorial-intro">
+        <h2>Bienvenido al Sistema CRM</h2>
+        <p><strong><u>Este sistema integra gestión de clientes y presupuestos en una sola plataforma,</u></strong> ideal para negocios que necesitan gestionar relaciones con clientes y crear cotizaciones profesionales.</p>
+      </div>
+      <div class="tutorial-slider-container">
+        <button class="slider-arrow slider-arrow-left" id="prev-step">‹</button>
+        <div class="tutorial-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Gestión Integrada</h3>
+              <p>Este CRM (Customer Relationship Management) unifica clientes y presupuestos. Cada presupuesto se vincula automáticamente con un cliente, evitando duplicados y manteniendo datos consistentes.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Vista 360° del Cliente</h3>
+              <p>Haz click en cualquier cliente para ver su ficha completa: datos de contacto, notas históricas y todos los presupuestos asociados con sus estados.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Dashboard con Métricas Reales</h3>
+              <p>Visualiza estadísticas calculadas directamente desde tus datos: clientes activos, presupuestos por estado, tasa de conversión y total facturado.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Flujo de Trabajo Optimizado</h3>
+              <p>Crea presupuestos seleccionando clientes existentes. El sistema mantiene el historial completo y permite exportar todo a PDF para compartir.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h3>Demo Interactiva</h3>
+              <p>Esta demo incluye clientes y presupuestos de ejemplo. Explora, edita y experimenta libremente. Los datos se guardan en tu navegador.</p>
+            </div>
+          </div>
+        </div>
+        <button class="slider-arrow slider-arrow-right" id="next-step">›</button>
+      </div>
+      <div class="slider-indicators">
+        <span class="indicator active" data-step="0"></span>
+        <span class="indicator" data-step="1"></span>
+        <span class="indicator" data-step="2"></span>
+        <span class="indicator" data-step="3"></span>
+        <span class="indicator" data-step="4"></span>
+      </div>
+      <button class="tutorial-close-btn" id="close-tutorial">Comenzar Demo</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <img src="logo_4.png" class="small-logo" alt="EDEN SoftWork Logo">
+    
+    <h1>Sistema CRM</h1>
+    <p>Gestiona clientes, presupuestos y el ciclo completo de ventas en una sola plataforma profesional.</p>
+
+    <!-- Dashboard Section -->
+    <div class="dashboard-section">
+      <h2>📊 Dashboard Ejecutivo</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Clientes</div>
+            <div class="stat-value" id="stats-total-clients">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📄</div>
+          <div class="stat-content">
+            <div class="stat-label">Presupuestos Totales</div>
+            <div class="stat-value" id="stats-total-budgets">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-content">
+            <div class="stat-label">Tasa de Conversión</div>
+            <div class="stat-value" id="stats-conversion-rate">0%</div>
+          </div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Facturado</div>
+            <div class="stat-value" id="stats-revenue">$0</div>
+          </div>
+        </div>
+      </div>
+      <div class="budget-status-breakdown">
+        <h3>Presupuestos por Estado</h3>
+        <div id="budget-status-list" class="status-list"></div>
+      </div>
+    </div>
+
+    <!-- Clients Section -->
+    <div class="clients-section">
+      <h2>👥 Gestión de Clientes</h2>
+      <button id="add-client-btn" class="action-btn">➕ Agregar Cliente</button>
+      
+      <div class="filters">
+        <input type="text" id="search-client" placeholder="Buscar por nombre o email">
+        <select id="filter-client-status">
+          <option value="">Todos los Estados</option>
+          <option value="prospecto">Prospecto</option>
+          <option value="activo">Cliente Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+        <button id="clear-client-filters">Limpiar Filtros</button>
+      </div>
+
+      <div class="clients-table">
+        <table id="clients-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Estado</th>
+              <th>Presupuestos</th>
+              <th>Total Facturado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="clients-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Budgets Section -->
+    <div class="budgets-section">
+      <h2>📄 Gestión de Presupuestos</h2>
+      <button id="add-budget-btn" class="action-btn">➕ Crear Presupuesto</button>
+      
+      <div class="filters">
+        <input type="text" id="search-budget" placeholder="Buscar por cliente">
+        <select id="filter-budget-status">
+          <option value="">Todos los Estados</option>
+          <option value="borrador">Borrador</option>
+          <option value="enviado">Enviado</option>
+          <option value="aceptado">Aceptado</option>
+          <option value="rechazado">Rechazado</option>
+        </select>
+        <button id="clear-budget-filters">Limpiar Filtros</button>
+      </div>
+
+      <div class="budgets-table">
+        <table id="budgets-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="budgets-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Cliente -->
+    <div id="client-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="client-close">&times;</span>
+        <h3 id="client-modal-title">Agregar Cliente</h3>
+        <form id="client-form">
+          <label>Nombre Completo</label>
+          <input type="text" id="client-name" placeholder="Ej: María González" required>
+          
+          <label>Email</label>
+          <input type="email" id="client-email" placeholder="maria@ejemplo.com" required>
+          
+          <label>Teléfono</label>
+          <input type="tel" id="client-phone" placeholder="+54 11 1234-5678" required>
+          
+          <label>Estado</label>
+          <select id="client-status" required>
+            <option value="prospecto">Prospecto</option>
+            <option value="activo">Cliente Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+          
+          <label>Nota (opcional)</label>
+          <textarea id="client-note" placeholder="Agregar nota sobre el cliente"></textarea>
+          
+          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+            <button type="submit" id="submit-client-btn">Guardar Cliente</button>
+            <button type="button" id="cancel-client">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Presupuesto -->
+    <div id="budget-modal" class="modal">
+      <div class="modal-content budget-modal-large">
+        <span class="close" id="budget-close">&times;</span>
+        <h3 id="budget-modal-title">Crear Presupuesto</h3>
+        <form id="budget-form">
+          <label>Cliente</label>
+          <select id="budget-client" required>
+            <option value="">Seleccionar cliente...</option>
+          </select>
+          
+          <label>Fecha</label>
+          <input type="date" id="budget-date" required>
+          
+          <label>Ítems del Presupuesto</label>
+          <div id="items-container">
+            <div class="item-row">
+              <input type="text" placeholder="Descripción" class="item-desc" required>
+              <input type="number" placeholder="Cantidad" min="1" class="item-qty" value="1" required>
+              <input type="number" placeholder="Precio" step="0.01" min="0" class="item-price" required>
+              <button type="button" class="remove-item">✕</button>
+            </div>
+          </div>
+          <button type="button" id="add-item-btn" class="secondary-btn">➕ Agregar Ítem</button>
+          
+          <div class="budget-total-display">
+            <strong>Total:</strong> $<span id="budget-total">0.00</span>
+          </div>
+          
+          <label>Estado</label>
+          <select id="budget-status" required>
+            <option value="borrador">Borrador</option>
+            <option value="enviado">Enviado</option>
+            <option value="aceptado">Aceptado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+          
+          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+            <button type="submit" id="submit-budget-btn">Guardar Presupuesto</button>
+            <button type="button" id="cancel-budget">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Vista Cliente -->
+    <div id="client-view-modal" class="modal">
+      <div class="modal-content client-view-large">
+        <span class="close" id="client-view-close">&times;</span>
+        <div id="client-view-content"></div>
+      </div>
+    </div>
+
+    <!-- Modal Mensaje -->
+    <div id="message-modal" class="message-modal">
+      <div class="message-content">
+        <span class="message-close">&times;</span>
+        <p id="message-text"></p>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 30px;">
+      <a href="../../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← Volver a inicio</a>
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
