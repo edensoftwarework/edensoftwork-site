@@ -9,6 +9,34 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Tutorial Modal -->
+  <div id="tutorial-modal" class="tutorial-modal">
+    <div class="tutorial-modal-content">
+      <span id="tutorial-close" class="tutorial-close-x">&times;</span>
+      <div class="tutorial-intro">
+        <h2>Bienvenido a Landing Page Demo</h2>
+        <p><strong><u>Esta página web muestra cómo una panadería puede presentar sus productos y captar clientes en línea.</u></strong> Ideal para negocios que buscan mejorar su presencia digital y aumentar ventas.</p>
+      </div>
+      <div class="tutorial-slider-container">
+        <button class="slider-arrow slider-arrow-left" id="prev-step">‹</button>
+        <div class="tutorial-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Página Web para Negocios</h3>
+              <p>Esta demo muestra una página web profesional con imágenes de los productos, catálogo organizado por categorías e información de contacto. Todo diseñado para atraer clientes y facilitar la comunicación con tu negocio.</p>
+            </div>
+          </div>
+        </div>
+        <button class="slider-arrow slider-arrow-right" id="next-step">›</button>
+      </div>
+      <div class="slider-indicators">
+        <span class="indicator active" data-step="0"></span>
+      </div>
+      <button class="tutorial-close-btn" id="close-tutorial">Comenzar Demo</button>
+    </div>
+  </div>
+
   <header>
     <nav>
       <div class="logo">Panadería La Deliciosa</div>
@@ -443,6 +471,86 @@
   </footer>
 
   <script>
+    // Tutorial Modal Logic
+    let currentStep = 0;
+    const steps = document.querySelectorAll('.step');
+    const indicators = document.querySelectorAll('.indicator');
+    const prevStepBtn = document.getElementById('prev-step');
+    const nextStepBtn = document.getElementById('next-step');
+    const tutorialModal = document.getElementById('tutorial-modal');
+    const tutorialClose = document.getElementById('tutorial-close');
+    const closeTutorialBtn = document.getElementById('close-tutorial');
+
+    function showTutorial() {
+      tutorialModal.style.display = 'flex';
+      currentStep = 0;
+      updateStep();
+      prevStepBtn.style.display = 'none';
+    }
+
+    function closeTutorial() {
+      tutorialModal.style.display = 'none';
+    }
+
+    function updateStep() {
+      steps.forEach((step, index) => {
+        step.classList.toggle('active', index === currentStep);
+      });
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentStep);
+      });
+      
+      prevStepBtn.style.display = currentStep === 0 ? 'none' : 'flex';
+      nextStepBtn.style.display = currentStep === steps.length - 1 ? 'none' : 'flex';
+    }
+
+    prevStepBtn.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateStep();
+      }
+    });
+
+    nextStepBtn.addEventListener('click', () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateStep();
+      }
+    });
+
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        currentStep = index;
+        updateStep();
+      });
+    });
+
+    tutorialClose.addEventListener('click', closeTutorial);
+    closeTutorialBtn.addEventListener('click', closeTutorial);
+
+    // Keyboard navigation for tutorial
+    document.addEventListener('keydown', (e) => {
+      if (tutorialModal.style.display === 'flex') {
+        if (e.key === 'ArrowLeft' && currentStep > 0) {
+          e.preventDefault();
+          currentStep--;
+          updateStep();
+        } else if (e.key === 'ArrowRight' && currentStep < steps.length - 1) {
+          e.preventDefault();
+          currentStep++;
+          updateStep();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          closeTutorial();
+        }
+      }
+    });
+
+    // Show tutorial on page load
+    window.addEventListener('load', () => {
+      setTimeout(showTutorial, 500);
+    });
+
     // Smooth scrolling
     document.querySelectorAll('nav a').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
